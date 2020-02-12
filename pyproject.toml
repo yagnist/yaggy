@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "yaggy"
+version = "0.1.0"
+description = "Simple yet powerfull and friendly tool to administer remote servers using ssh"
+authors = ["Yuri Egorov <ysegorov@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+paramiko = "^2.7.1"
+qtoml = "^0.3.0"
+jinja2 = "^2.10.3"
+click = "^7.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+coverage = "^5.0.3"
+pytest-cov = "^2.8.1"
+
+[tool.poetry.scripts]
+yg = 'yaggy.cli:runner'
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
