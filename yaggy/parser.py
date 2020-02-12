@@ -45,7 +45,7 @@ def parse(filename, tags=None, refs=None):
 
     for line in load(filename):
 
-        to_include = None
+        to_include = validate_res = None
         cmdname, cmd, ref, backref, args = command_parts(line)
 
         if cmd is None:
@@ -68,9 +68,6 @@ def parse(filename, tags=None, refs=None):
             msg = 'Reference "%s" is already taken, please use another' % ref
             raise YaggySyntaxError(msg)
 
-        # print('ref:{} cmd:{} backref:{} args:{}'.format(
-        #     ref or '', cmd, backref or '', args or ''))
-
         if cmdname == 'INCLUDE':
             to_include = os.path.join(basedir, args)
         elif cmdname == 'TAG':
@@ -91,7 +88,9 @@ def parse(filename, tags=None, refs=None):
         }
 
         if 'validate' in cmd:
-            cmd['validate'](**parsed)
+            validate_res = cmd['validate'](**parsed)
+            if validate_res is not None and isinstance(validate_res, dict):
+                parsed.update(validate_res)
         if 'validate_ref_backref' in cmd:
             cmd['validate_ref_backref'](**parsed)
 

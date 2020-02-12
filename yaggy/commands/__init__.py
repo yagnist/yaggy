@@ -3,18 +3,19 @@
 import re
 
 from .cmd_common import no_ref_backref
-from .cmd_vars import validate_vars, run_vars, validate_secrets
+from .cmd_vars import validate_vars, call_vars, validate_secrets, call_secrets
 
 
 COMMANDS = {
     'VARS': {
         'validate': validate_vars,
         'validate_ref_backref': no_ref_backref,
-        'run': run_vars,
+        'call': call_vars,
     },
     'SECRETS': {
         'validate': validate_secrets,
         'validate_ref_backref': no_ref_backref,
+        'call': call_secrets,
     },
     'CONNECT': {},
     'RECONNECT': {},

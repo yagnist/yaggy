@@ -56,10 +56,10 @@ def runner(filename, **kwargs):
         sys.exit(1)
 
     for cmd, kwargs in scenario:
-        logger.debug('Command: %(cmdname)s %(args)s', kwargs)
-        if 'run' in cmd:
+        logger.debug('Command: %(line)s', kwargs)
+        if 'call' in cmd:
             try:
-                cmd['run'](ctx, **kwargs)
+                cmd['call'](ctx, **kwargs)
             except Exception as e:
                 msg = str(e)
                 logger.exception(e)
