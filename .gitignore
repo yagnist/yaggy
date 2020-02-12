@@ -1,0 +1,14 @@
+build/
+dist/
+env/
+*.egg-info/
+*.egg
+.eggs
+*.py[cod]
+.cache/
+__pycache__/
+*.so
+*~
+.coverage
+test
+docs/output/
