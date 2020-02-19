@@ -6,7 +6,6 @@ authors = ["Yuri Egorov <ysegorov@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-paramiko = "^2.7.1"
 qtoml = "^0.3.0"
 jinja2 = "^2.10.3"
 click = "^7.0"
