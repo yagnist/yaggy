@@ -3,6 +3,7 @@
 import re
 
 from .cmd_common import no_ref_backref
+from .cmd_connect import validate_connect, call_connect
 from .cmd_vars import validate_vars, call_vars, validate_secrets, call_secrets
 
 
@@ -17,7 +18,11 @@ COMMANDS = {
         'validate_ref_backref': no_ref_backref,
         'call': call_secrets,
     },
-    'CONNECT': {},
+    'CONNECT': {
+        'validate': validate_connect,
+        'validate_ref_backref': no_ref_backref,
+        'call': call_connect,
+    },
     'RECONNECT': {},
     'DISCONNECT': {},
     'INCLUDE': {},

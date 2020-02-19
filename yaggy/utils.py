@@ -33,9 +33,3 @@ def pick(ctx, path):
         else:
             return
     return ctx[parts[-1]]
-
-
-def format_log(msg, newline=False):
-    nl = '\n' if newline else ''
-    return f'***** {msg} *****{nl}'
-

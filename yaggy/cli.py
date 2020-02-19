@@ -9,7 +9,7 @@ import click
 from .context import setup_context
 from .exceptions import YaggyError
 from .parser import parse
-from .utils import pick, format_log
+from .utils import pick
 from . import __version__ as version
 
 
@@ -39,10 +39,9 @@ def runner(filename, **kwargs):
     logger = pick(ctx, 'logger.local')
     dt = pick(ctx, 'started_at')
 
-    logger.info(
-        format_log('Yaggy version:%s localtime:%s', newline=True),
-        version,
-        dt.strftime('"%Y-%m-%d %H:%M:%S"'))
+    logger.info('***** Yaggy version:%s localtime:%s *****',
+                version,
+                dt.strftime('"%Y-%m-%d %H:%M:%S"'))
 
     try:
         scenario = list(parse(filename))
@@ -55,13 +54,30 @@ def runner(filename, **kwargs):
         logger.exception('File not found: "%s"', msg)
         sys.exit(1)
 
-    for cmd, kwargs in scenario:
-        logger.debug('Command: %(line)s', kwargs)
-        if 'call' in cmd:
-            try:
-                cmd['call'](ctx, **kwargs)
-            except Exception as e:
-                msg = str(e)
-                logger.exception(e)
-                sys.exit(1)
-    # logger.debug('%s', scenario)
+    try:
+
+        for cmd, kwargs in scenario:
+            logger.info('')
+            logger.debug('# %(line)s', kwargs)
+
+            caller = cmd.get('call')
+            if callable(caller):
+                try:
+                    caller(ctx, **kwargs)
+                except Exception as e:
+                    logger.error('"%(cmdname)s" command failed', kwargs)
+
+                    msg = str(e)
+                    logger.exception(e)
+                    sys.exit(1)
+
+    finally:
+        ssh= pick(ctx, 'ssh')
+        if 'proc' in ssh:
+            ssh_proc = pick(ssh, 'proc')
+            ssh_timeout = pick(ssh, 'cmd_timeout')
+
+            res = ssh_proc.poll()
+            if res is None:
+                ssh_proc.terminate()
+                ssh_proc.wait(timeout=ssh_timeout)

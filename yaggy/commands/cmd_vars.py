@@ -29,16 +29,12 @@ def call_vars(ctx, **kwargs):
     logger = pick(ctx, 'logger.local')
 
     with open(filename, 'rt', encoding='utf-8') as f:
-        try:
-            data = qtoml.load(f)
-        except qtoml.decoder.TOMLDecodeError as e:
-            msg = 'Error decoding toml data'
-            raise YaggyCommandError(msg) from e
+        data = qtoml.load(f)
 
     current = pick(ctx, 'vars')
     ctx['vars'] = mergedict(current, data)
 
-    logger.info('VARS file "%(args)s" loaded', kwargs)
+    logger.debug('[VARS] "%(args)s" file loaded', kwargs)
 
 
 def validate_secrets(**kwargs):
@@ -75,21 +71,22 @@ def call_secrets(ctx, **kwargs):
 
     if 'to_load' in kwargs:
         filename = kwargs['to_load']
+
         with open(filename, 'rt', encoding='utf-8') as f:
             data = f.read()
+
+        msg = '[SECRETS] "%(args)s" file loaded'
     else:
         cmd = kwargs['to_exec']
 
         res = subprocess.run(cmd, capture_output=True, encoding='utf-8')
         data = res.stdout
 
-    try:
-        data = qtoml.loads(data)
-    except qtoml.decoder.TOMLDecodeError as e:
-        msg = 'Error decoding toml data'
-        raise YaggyCommandError(msg) from e
+        msg = '[SECRETS] "%(args)s" command executed and loaded'
+
+    data = qtoml.loads(data)
 
     current = pick(ctx, 'secrets')
     ctx['secrets'] = mergedict(current, data)
 
-    logger.info('SECRETS from `%(args)s` loaded', kwargs)
+    logger.debug(msg, kwargs)

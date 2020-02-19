@@ -37,6 +37,8 @@ class ColoredStreamHandler(logging.StreamHandler):
     COLOR_LOCAL = 'bright_green'
     COLOR_REMOTE = 'bright_blue'
 
+    COLOR_COMMENT = 'bright_black'
+
     def emit(self, record):
 
         fg = self.COLORS.get(record.levelno)
@@ -57,14 +59,18 @@ class ColoredStreamHandler(logging.StreamHandler):
                     left, leftsep, middle = head.partition('|')
                     middle, rightsep, right = middle.partition('|')
 
+                    is_comment = right.startswith(' #')
+                    body_color = self.COLOR_COMMENT if is_comment else None
+
                     head = (
                         click.style(left + leftsep, fg=fg) +
                         click.style(middle, fg=clr) +
                         click.style(rightsep, fg=fg) +
-                        right)
+                        click.style(right, fg=body_color))
 
                 tail = ''.join(
-                    click.style(x[:width], fg=fg) + x[width:]
+                    click.style(x[:width], fg=fg) +
+                    click.style(x[width:], fg=body_color)
                     for x in tail
                 )
                 msg = head + tail
@@ -78,6 +84,8 @@ class ColoredStreamHandler(logging.StreamHandler):
 class YaggyLoggerAdapter(logging.LoggerAdapter):
 
     def process(self, msg, kwargs):
+        if not msg:
+            return msg, kwargs
         prefix = self.extra.get('prefix')
         msg = '| %s | %s' % (prefix, msg)
         return msg, kwargs
@@ -119,14 +127,8 @@ def logging_config(filename, verbose):
     }
 
 
-def setup_logging(logdir, logfile, verbose):
-
-    if not os.path.isdir(logdir):
-        os.mkdir(logdir)
-
-    logfile = os.path.join(logdir, logfile)
+def setup_logging(logfile, verbose):
     logconf = logging_config(logfile, verbose)
-
     logging.config.dictConfig(logconf)
 
 

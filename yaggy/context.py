@@ -2,26 +2,22 @@
 
 import os
 import datetime
+import pwd
 
-import paramiko
-
+from . import ssh
 from .logging import setup_logging, get_logger
 
 
-def load_ssh_config(hostname):
-    conffile = os.path.join(os.path.expanduser('~'), '.ssh', 'config')
-
-    if os.path.isfile(conffile):
-        config = paramiko.SSHConfig.from_path(conffile)
-        return config.lookup(hostname)
-
-    return paramiko.SSHConfigDict()
+def get_local_username():
+    return pwd.getpwuid(os.getuid()).pw_name
 
 
-def make_ssh_client():
-    client = paramiko.SSHClient()
-    client.load_system_host_keys()
-    return client
+def mkdir(mode, *args):
+    path = os.path.join(*args)
+    if not os.path.isdir(path):
+        os.mkdir(path)
+        os.chmod(path, mode)
+    return path
 
 
 def setup_context(filename, **kwargs):
@@ -35,33 +31,36 @@ def setup_context(filename, **kwargs):
     basename = os.path.basename(filename)
     prefix = os.path.splitext(basename)[0]
 
-    logdir = os.path.join(basedir, 'logs')
+    # logging
+    logdir = mkdir(0o700, basedir, 'logs')
     logfile = '{}.{}.{}.log'.format(
         prefix, hostname, dt.strftime('%Y%m%d%H%M%S'))
+    logfile = os.path.join(logdir, logfile)
 
-    setup_logging(logdir, logfile, verbose)
+    setup_logging(logfile, verbose)
 
-    ssh_config = load_ssh_config(hostname)
-    ssh_client = make_ssh_client()
-
-    remotename = ssh_config['hostname']
     localname = 'localhost'
-    w = max((len(remotename), len(localname)))
+    w = max((len(hostname), len(localname)))
 
     logger_local = get_logger('yaggy.local', localname.rjust(w))
-    logger_remote = get_logger('yaggy.remote', remotename.rjust(w))
+    logger_remote = get_logger('yaggy.remote', hostname.rjust(w))
+
+    # ssh
+    runtimedir = mkdir(0o700, basedir, '.yaggy')
+
+    ssh_config = ssh.init(runtimedir, logger=logger_local, **kwargs)
 
     ctx = {
         'filename': filename,
         'basedir': basedir,
         'cli': kwargs,
-        'ssh': {
-            'config': ssh_config,
-            'client': ssh_client,
-        },
+        'ssh': ssh_config,
         'logger': {
             'local': logger_local,
             'remote': logger_remote,
+        },
+        'local': {
+            'username': get_local_username(),
         },
         'started_at': dt,
         'vars': {},
