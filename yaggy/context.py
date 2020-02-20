@@ -48,7 +48,7 @@ def setup_context(filename, **kwargs):
     # ssh
     runtimedir = mkdir(0o700, basedir, '.yaggy')
 
-    ssh_config = ssh.init(runtimedir, logger=logger_local, **kwargs)
+    ssh_config = ssh.setup_ssh(runtimedir, logger=logger_local, **kwargs)
 
     ctx = {
         'filename': filename,

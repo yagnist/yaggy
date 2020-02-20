@@ -33,3 +33,13 @@ def pick(ctx, path):
         else:
             return
     return ctx[parts[-1]]
+
+
+def mutate(ctx, path, value):
+
+    parts = path.split('.')
+    for key in parts[:-1]:
+        if key not in ctx:
+            ctx[key] = {}
+        ctx = ctx[key]
+    ctx[parts[-1]] = value

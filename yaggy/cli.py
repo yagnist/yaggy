@@ -9,6 +9,7 @@ import click
 from .context import setup_context
 from .exceptions import YaggyError
 from .parser import parse
+from .ssh import disconnect
 from .utils import pick
 from . import __version__ as version
 
@@ -72,12 +73,4 @@ def runner(filename, **kwargs):
                     sys.exit(1)
 
     finally:
-        ssh= pick(ctx, 'ssh')
-        if 'proc' in ssh:
-            ssh_proc = pick(ssh, 'proc')
-            ssh_timeout = pick(ssh, 'cmd_timeout')
-
-            res = ssh_proc.poll()
-            if res is None:
-                ssh_proc.terminate()
-                ssh_proc.wait(timeout=ssh_timeout)
+        disconnect(ctx)
