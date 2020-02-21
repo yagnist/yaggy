@@ -7,7 +7,7 @@ import subprocess
 
 import qtoml
 
-from ..exceptions import YaggySyntaxError, YaggyCommandError
+from ..exceptions import YaggySyntaxError
 from ..utils import mergedict, pick
 
 

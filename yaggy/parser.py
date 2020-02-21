@@ -50,29 +50,37 @@ def parse(filename, tags=None, refs=None):
 
         if cmd is None:
             # TODO better message including filename and line number
-            msg = 'Unknown command in line "%s"' % line
+            msg = f'Unknown command in line "{line}"'
             raise YaggySyntaxError(msg)
 
         if ref is not None and ref == backref:
             # TODO better message including filename and line number
-            msg = 'Backreference equals to reference "%s"' % ref
+            msg = f'Backreference equals to reference "{ref}"'
             raise YaggySyntaxError(msg)
 
         if backref is not None and backref not in refs:
             # TODO better message including filename and line number
-            msg = 'Unknown backreference "%s"' % backref
+            msg = f'Unknown backreference "{backref}"'
             raise YaggySyntaxError(msg)
 
         if ref is not None and ref in refs:
             # TODO better message including filename and line number
-            msg = 'Reference "%s" is already taken, please use another' % ref
+            msg = f'Reference "{ref}" is already taken, please use another'
             raise YaggySyntaxError(msg)
 
         if cmdname == 'INCLUDE':
             to_include = os.path.join(basedir, args)
         elif cmdname == 'TAG':
+            if args in tags:
+                # TODO better message including filename and line number
+                msg = f'Tag "{args}" already in use, please use another'
+                raise YaggySyntaxError(msg)
             tags.add(args)
         elif cmdname == 'UNTAG':
+            if args not in tags:
+                # TODO better message including filename and line number
+                msg = f'Tag "{args}" is unknown, unable to untag'
+                raise YaggySyntaxError(msg)
             tags.remove(args)
 
         refs.add(ref)

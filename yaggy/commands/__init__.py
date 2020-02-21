@@ -5,6 +5,8 @@ import re
 from .common import no_ref_backref
 from .cmd_connect import (validate_connect, call_connect,
                           validate_disconnect, call_disconnect)
+from .cmd_misc import (validate_include, call_include,
+                       call_tag, call_untag, call_echo)
 from .cmd_vars import validate_vars, call_vars, validate_secrets, call_secrets
 
 
@@ -30,10 +32,23 @@ COMMANDS = {
         'validate_ref_backref': no_ref_backref,
         'call': call_disconnect,
     },
-    'INCLUDE': {},
-    'TAG': {},
-    'UNTAG': {},
-    'ECHO': {},
+    'INCLUDE': {
+        'validate': validate_include,
+        'validate_ref_backref': no_ref_backref,
+        'call': call_include,
+    },
+    'TAG': {
+        'validate_ref_backref': no_ref_backref,
+        'call': call_tag,
+    },
+    'UNTAG': {
+        'validate_ref_backref': no_ref_backref,
+        'call': call_untag,
+    },
+    'ECHO': {
+        'validate_ref_backref': no_ref_backref,
+        'call': call_echo,
+    },
     'RUN!': {},
     'RUN': {},
     'SU': {},
