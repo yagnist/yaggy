@@ -44,7 +44,7 @@ def setup_ssh(runtimedir, **kwargs):
         'cmd_run': cmd_run,
         'control_socket': cp,
         'conn_timeout': conn_timeout,
-        'proc': None,
+        'channel': None,
         'is_connected': False,
     }
 

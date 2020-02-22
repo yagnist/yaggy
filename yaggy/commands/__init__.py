@@ -2,12 +2,15 @@
 
 import re
 
-from .common import no_ref_backref, no_backref
+from .common import no_ref_backref, no_backref, has_args
 from .cmd_connect import (validate_connect, call_connect,
                           validate_disconnect, call_disconnect)
+from .cmd_local import (call_lrun, call_lrun_exclamation,
+                        call_lfailed, call_lsucceed)
 from .cmd_misc import (validate_include, call_include,
                        call_tag, call_untag, call_echo)
-from .cmd_remote import validate_run, call_run, call_run_exclamation
+from .cmd_remote import (call_run, call_run_exclamation,
+                         call_failed, call_succeed)
 from .cmd_vars import validate_vars, call_vars, validate_secrets, call_secrets
 
 
@@ -51,25 +54,45 @@ COMMANDS = {
         'call': call_echo,
     },
     'RUN': {
-        'validate': validate_run,
+        'validate': has_args,
         'validate_ref_backref': no_backref,
         'call': call_run,
     },
     'RUN!': {
-        'validate': validate_run,
+        'validate': has_args,
         'validate_ref_backref': no_backref,
         'call': call_run_exclamation,
     },
-    'FAILED?': {},
-    'SUCCEED?': {},
+    'FAILED?': {
+        'validate': has_args,
+        'call': call_failed,
+    },
+    'SUCCEED?': {
+        'validate': has_args,
+        'call': call_succeed,
+    },
     'CHANGED?': {},
     'COPY': {},
     'FETCH': {},
     'TEMPLATE': {},
-    'LRUN!': {},
-    'LRUN': {},
-    'LFAILED?': {},
-    'LSUCCEED?': {},
+    'LRUN': {
+        'validate': has_args,
+        'validate_ref_backref': no_backref,
+        'call': call_lrun,
+    },
+    'LRUN!': {
+        'validate': has_args,
+        'validate_ref_backref': no_backref,
+        'call': call_run_exclamation,
+    },
+    'LFAILED?': {
+        'validate': has_args,
+        'call': call_lfailed,
+    },
+    'LSUCCEED?': {
+        'validate': has_args,
+        'call': call_lsucceed,
+    },
     'LTEMPLATE': {},
     'LCHANGED?': {},
 }
