@@ -42,4 +42,4 @@ def call_echo(ctx, **kwargs):
 
     logger = pick(ctx, 'logger.local')
 
-    logger.info('%(args)s', kwargs)
+    logger.info('***** %(args)s *****', kwargs)

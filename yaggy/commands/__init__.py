@@ -2,11 +2,12 @@
 
 import re
 
-from .common import no_ref_backref
+from .common import no_ref_backref, no_backref
 from .cmd_connect import (validate_connect, call_connect,
                           validate_disconnect, call_disconnect)
 from .cmd_misc import (validate_include, call_include,
                        call_tag, call_untag, call_echo)
+from .cmd_remote import validate_run, call_run, call_run_exclamation
 from .cmd_vars import validate_vars, call_vars, validate_secrets, call_secrets
 
 
@@ -49,10 +50,16 @@ COMMANDS = {
         'validate_ref_backref': no_ref_backref,
         'call': call_echo,
     },
-    'RUN!': {},
-    'RUN': {},
-    'SU': {},
-    'LOGOUT': {},
+    'RUN': {
+        'validate': validate_run,
+        'validate_ref_backref': no_backref,
+        'call': call_run,
+    },
+    'RUN!': {
+        'validate': validate_run,
+        'validate_ref_backref': no_backref,
+        'call': call_run_exclamation,
+    },
     'FAILED?': {},
     'SUCCEED?': {},
     'CHANGED?': {},
@@ -68,9 +75,12 @@ COMMANDS = {
 }
 
 
+# NB. RUN! must be specified before RUN in regexp, LRUN! before LRUN
+allowed_commands = sorted(COMMANDS.keys(), reverse=True)
+
 COMMAND_RE = re.compile(
     r'((?P<ref>@[a-zA-Z0-9_-]+)\s+)?'
-    r'(?P<command>' + r'|'.join(re.escape(x) for x in COMMANDS.keys()) + r')'
+    r'(?P<command>' + r'|'.join(re.escape(x) for x in allowed_commands) + r')'
     r'((\s+(?P<backref>@[a-zA-Z0-9._-]+))?(\s*(?P<args>.*)))$',
     re.UNICODE
 )

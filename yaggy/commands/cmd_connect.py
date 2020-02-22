@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import shlex
-
-from ..exceptions import YaggySyntaxError
-from ..ssh import connect, disconnect
-from ..utils import pick
+from yaggy.exceptions import YaggySyntaxError
+from yaggy.ssh import connect, disconnect
+from yaggy.utils import pick
 
 from .common import run
 
@@ -28,12 +26,13 @@ def call_connect(ctx, **kwargs):
     commands = ['uname -a', 'hostname -f', 'date', 'whoami']
 
     for cmd in commands:
-        run(shlex.split(ssh_run) + shlex.split(cmd),
+        run(execute=ssh_run,
+            cmd=cmd,
+            logger=logger_remote,
+            raise_on_error=False,
             capture_output=True,
             encoding='utf-8',
-            timeout=conn_timeout,
-            logger=logger_remote,
-            cmd=cmd)
+            timeout=conn_timeout)
 
 
 def validate_disconnect(**kwargs):

@@ -58,7 +58,7 @@ def runner(filename, **kwargs):
     try:
 
         for cmd, kwargs in scenario:
-            logger.info('')
+            logger.debug('')
             logger.debug('# %(line)s', kwargs)
 
             caller = cmd.get('call')

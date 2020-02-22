@@ -105,7 +105,7 @@ def logging_config(filename, verbose):
         },
         'handlers': {
             'console': {
-                'level': level,
+                'level': 'INFO',
                 'class': 'yaggy.logging.ColoredStreamHandler',
                 'formatter': 'indented',
             },
