@@ -1,17 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from yaggy.exceptions import YaggySyntaxError
 from yaggy.ssh import connect, disconnect
 from yaggy.utils import pick
 
 from .common import run
-
-
-def validate_connect(**kwargs):
-    args = kwargs['args']
-
-    if args:
-        raise YaggySyntaxError('CONNECT command does not expect any arguments')
 
 
 def call_connect(ctx, **kwargs):
@@ -33,14 +25,6 @@ def call_connect(ctx, **kwargs):
             capture_output=True,
             encoding='utf-8',
             timeout=conn_timeout)
-
-
-def validate_disconnect(**kwargs):
-    args = kwargs['args']
-
-    if args:
-        raise YaggySyntaxError(
-            'DISCONNECT command does not expect any arguments')
 
 
 def call_disconnect(ctx, **kwargs):

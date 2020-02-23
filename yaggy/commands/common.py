@@ -4,38 +4,8 @@ import os
 import shlex
 import subprocess
 
-from yaggy.exceptions import YaggySyntaxError, YaggyCommandError
+from yaggy.exceptions import YaggyCommandError
 from yaggy.utils import pick, mutate
-
-
-def no_ref_backref(**kwargs):
-    ref = kwargs['ref']
-    backref = kwargs['backref']
-
-    if ref is not None or backref is not None:
-        cmdname = kwargs['cmdname']
-        msg = (f'{cmdname} command does not expect '
-               f'@ref or @backref in arguments')
-        raise YaggySyntaxError(msg)
-
-
-def no_backref(**kwargs):
-    backref = kwargs['backref']
-
-    if backref is not None:
-        cmdname = kwargs['cmdname']
-        msg = (f'{cmdname} command does not expect '
-               f'@backref in arguments')
-        raise YaggySyntaxError(msg)
-
-
-def has_args(**kwargs):
-    args = kwargs['args']
-
-    if not args.strip():
-        cmdname = kwargs['cmdname']
-        raise YaggySyntaxError(f'{cmdname} command expects some command '
-                               f'to execute')
 
 
 def failed(ctx, backref):

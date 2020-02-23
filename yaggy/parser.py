@@ -95,12 +95,13 @@ def parse(filename, tags=None, refs=None):
             'basedir': basedir,
         }
 
-        if 'validate' in cmd:
-            validate_res = cmd['validate'](**parsed)
+        assert 'validators' in cmd
+        assert isinstance(cmd['validators'], (list, tuple))
+
+        for validator in cmd['validators']:
+            validate_res = validator(**parsed)
             if validate_res is not None and isinstance(validate_res, dict):
                 parsed.update(validate_res)
-        if 'validate_ref_backref' in cmd:
-            cmd['validate_ref_backref'](**parsed)
 
         yield cmd, parsed
 

@@ -2,9 +2,7 @@
 
 import re
 
-from .common import no_ref_backref, no_backref, has_args
-from .cmd_connect import (validate_connect, call_connect,
-                          validate_disconnect, call_disconnect)
+from .cmd_connect import call_connect, call_disconnect
 from .cmd_local import (call_lrun, call_lrun_exclamation,
                         call_lfailed, call_lsucceed)
 from .cmd_misc import (validate_include, call_include,
@@ -13,62 +11,88 @@ from .cmd_remote import (call_run, call_run_exclamation,
                          call_failed, call_succeed)
 from .cmd_vars import validate_vars, call_vars, validate_secrets, call_secrets
 
+from .validators import no_ref_backref, no_backref, no_args, has_args
+
 
 COMMANDS = {
     'VARS': {
-        'validate': validate_vars,
-        'validate_ref_backref': no_ref_backref,
+        'validators': [
+            no_ref_backref,
+            validate_vars,
+        ],
         'call': call_vars,
     },
     'SECRETS': {
-        'validate': validate_secrets,
-        'validate_ref_backref': no_ref_backref,
+        'validators': [
+            no_ref_backref,
+            validate_secrets,
+        ],
         'call': call_secrets,
     },
     'CONNECT': {
-        'validate': validate_connect,
-        'validate_ref_backref': no_ref_backref,
+        'validators': [
+            no_ref_backref,
+            no_args,
+        ],
         'call': call_connect,
     },
     'RECONNECT': {},
     'DISCONNECT': {
-        'validate': validate_disconnect,
-        'validate_ref_backref': no_ref_backref,
+        'validators': [
+            no_ref_backref,
+            no_args,
+        ],
         'call': call_disconnect,
     },
     'INCLUDE': {
-        'validate': validate_include,
-        'validate_ref_backref': no_ref_backref,
+        'validators': [
+            no_ref_backref,
+            validate_include,
+        ],
         'call': call_include,
     },
     'TAG': {
-        'validate_ref_backref': no_ref_backref,
+        'validators': [
+            no_ref_backref,
+        ],
         'call': call_tag,
     },
     'UNTAG': {
-        'validate_ref_backref': no_ref_backref,
+        'validators': [
+            no_ref_backref,
+        ],
         'call': call_untag,
     },
     'ECHO': {
-        'validate_ref_backref': no_ref_backref,
+        'validators': [
+            no_ref_backref,
+        ],
         'call': call_echo,
     },
     'RUN': {
-        'validate': has_args,
-        'validate_ref_backref': no_backref,
+        'validators': [
+            no_backref,
+            has_args,
+        ],
         'call': call_run,
     },
     'RUN!': {
-        'validate': has_args,
-        'validate_ref_backref': no_backref,
+        'validators': [
+            no_backref,
+            has_args,
+        ],
         'call': call_run_exclamation,
     },
     'FAILED?': {
-        'validate': has_args,
+        'validators': [
+            has_args,
+        ],
         'call': call_failed,
     },
     'SUCCEED?': {
-        'validate': has_args,
+        'validators': [
+            has_args,
+        ],
         'call': call_succeed,
     },
     'CHANGED?': {},
@@ -76,21 +100,29 @@ COMMANDS = {
     'FETCH': {},
     'TEMPLATE': {},
     'LRUN': {
-        'validate': has_args,
-        'validate_ref_backref': no_backref,
+        'validators': [
+            no_backref,
+            has_args,
+        ],
         'call': call_lrun,
     },
     'LRUN!': {
-        'validate': has_args,
-        'validate_ref_backref': no_backref,
+        'validators': [
+            no_backref,
+            has_args,
+        ],
         'call': call_lrun_exclamation,
     },
     'LFAILED?': {
-        'validate': has_args,
+        'validators': [
+            has_args,
+        ],
         'call': call_lfailed,
     },
     'LSUCCEED?': {
-        'validate': has_args,
+        'validators': [
+            has_args,
+        ],
         'call': call_lsucceed,
     },
     'LTEMPLATE': {},
