@@ -83,7 +83,7 @@ COMMANDS = {
     'LRUN!': {
         'validate': has_args,
         'validate_ref_backref': no_backref,
-        'call': call_run_exclamation,
+        'call': call_lrun_exclamation,
     },
     'LFAILED?': {
         'validate': has_args,
