@@ -3,14 +3,12 @@
 from yaggy.exceptions import YaggySyntaxError
 
 
-def no_ref_backref(**kwargs):
+def no_ref(**kwargs):
     ref = kwargs['ref']
-    backref = kwargs['backref']
 
-    if ref is not None or backref is not None:
+    if ref is not None:
         cmdname = kwargs['cmdname']
-        msg = (f'{cmdname} command does not expect '
-               f'@ref or @backref in arguments')
+        msg = f'{cmdname} command does not expect {ref} in arguments'
         raise YaggySyntaxError(msg)
 
 
@@ -19,8 +17,7 @@ def no_backref(**kwargs):
 
     if backref is not None:
         cmdname = kwargs['cmdname']
-        msg = (f'{cmdname} command does not expect '
-               f'@backref in arguments')
+        msg = f'{cmdname} command does not expect {backref} in arguments'
         raise YaggySyntaxError(msg)
 
 

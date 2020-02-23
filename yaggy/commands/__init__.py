@@ -11,27 +11,30 @@ from .cmd_remote import (call_run, call_run_exclamation,
                          call_failed, call_succeed)
 from .cmd_vars import validate_vars, call_vars, validate_secrets, call_secrets
 
-from .validators import no_ref_backref, no_backref, no_args, has_args
+from .validators import no_ref, no_backref, no_args, has_args
 
 
 COMMANDS = {
     'VARS': {
         'validators': [
-            no_ref_backref,
+            no_ref,
+            no_backref,
             validate_vars,
         ],
         'call': call_vars,
     },
     'SECRETS': {
         'validators': [
-            no_ref_backref,
+            no_ref,
+            no_backref,
             validate_secrets,
         ],
         'call': call_secrets,
     },
     'CONNECT': {
         'validators': [
-            no_ref_backref,
+            no_ref,
+            no_backref,
             no_args,
         ],
         'call': call_connect,
@@ -39,33 +42,38 @@ COMMANDS = {
     'RECONNECT': {},
     'DISCONNECT': {
         'validators': [
-            no_ref_backref,
+            no_ref,
+            no_backref,
             no_args,
         ],
         'call': call_disconnect,
     },
     'INCLUDE': {
         'validators': [
-            no_ref_backref,
+            no_ref,
+            no_backref,
             validate_include,
         ],
         'call': call_include,
     },
     'TAG': {
         'validators': [
-            no_ref_backref,
+            no_ref,
+            no_backref,
         ],
         'call': call_tag,
     },
     'UNTAG': {
         'validators': [
-            no_ref_backref,
+            no_ref,
+            no_backref,
         ],
         'call': call_untag,
     },
     'ECHO': {
         'validators': [
-            no_ref_backref,
+            no_ref,
+            no_backref,
         ],
         'call': call_echo,
     },
@@ -85,20 +93,43 @@ COMMANDS = {
     },
     'FAILED?': {
         'validators': [
+            no_ref,
             has_args,
         ],
         'call': call_failed,
     },
     'SUCCEED?': {
         'validators': [
+            no_ref,
             has_args,
         ],
         'call': call_succeed,
     },
-    'CHANGED?': {},
-    'COPY': {},
-    'FETCH': {},
-    'TEMPLATE': {},
+    'CHANGED?': {
+        'validators': [
+            no_ref,
+            has_args,
+        ],
+    },
+    'COPY': {
+        'validators': [
+            no_backref,
+            has_args,
+        ],
+    },
+    'FETCH': {
+        'validators': [
+            no_ref,
+            no_backref,
+            has_args,
+        ],
+    },
+    'TEMPLATE': {
+        'validators': [
+            no_backref,
+            has_args,
+        ],
+    },
     'LRUN': {
         'validators': [
             no_backref,
@@ -115,18 +146,30 @@ COMMANDS = {
     },
     'LFAILED?': {
         'validators': [
+            no_ref,
             has_args,
         ],
         'call': call_lfailed,
     },
     'LSUCCEED?': {
         'validators': [
+            no_ref,
             has_args,
         ],
         'call': call_lsucceed,
     },
-    'LTEMPLATE': {},
-    'LCHANGED?': {},
+    'LTEMPLATE': {
+        'validators': [
+            no_backref,
+            has_args,
+        ],
+    },
+    'LCHANGED?': {
+        'validators': [
+            no_backref,
+            has_args,
+        ],
+    },
 }
 
 
