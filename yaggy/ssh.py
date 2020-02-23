@@ -44,7 +44,7 @@ def setup_ssh(runtimedir, **kwargs):
         'cmd_run': cmd_run,
         'control_socket': cp,
         'conn_timeout': conn_timeout,
-        'channel': None,
+        'tunnel': None,
         'is_connected': False,
     }
 
@@ -62,47 +62,47 @@ def connect(ctx):
     logger_local.debug('# attempting to connect with connect timeout %s ...',
                        conn_timeout)
 
-    channel = subprocess.Popen(shlex.split(ssh_cmd),
+    tunnel = subprocess.Popen(shlex.split(ssh_cmd),
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE,
                                encoding='utf-8')
     try:
-        proc_stdout, proc_stderr = channel.communicate(timeout=conn_timeout)
+        proc_stdout, proc_stderr = tunnel.communicate(timeout=conn_timeout)
     except subprocess.TimeoutExpired:
         proc_stdout = proc_stderr = None
 
-    if channel.poll() is not None:
+    if tunnel.poll() is not None:
         # NB. means no connection to server
         if proc_stdout:
             logger_remote.info(proc_stdout.strip())
         if proc_stderr:
             logger_remote.error(proc_stderr.strip())
 
-        raise YaggyConnectionError('[CHANNEL] connection failed')
+        raise YaggyConnectionError('[TUNNEL] connection failed')
 
-    logger_local.debug('[CHANNEL] state: connected')
+    logger_local.debug('[TUNNEL] state: connected')
 
-    mutate(ctx, 'ssh.channel', channel)
+    mutate(ctx, 'ssh.tunnel', tunnel)
     mutate(ctx, 'ssh.is_connected', True)
 
 
 def disconnect(ctx):
-    channel = pick(ctx, 'ssh.channel')
+    tunnel = pick(ctx, 'ssh.tunnel')
     is_connected = pick(ctx, 'ssh.is_connected')
     conn_timeout = pick(ctx, 'ssh.conn_timeout')
 
     logger_local = pick(ctx, 'logger.local')
 
-    if not is_connected or not channel:
+    if not is_connected or not tunnel:
         return
 
-    if channel:
-        res = channel.poll()
+    if tunnel:
+        res = tunnel.poll()
         if res is None:
-            channel.terminate()
-            channel.wait(timeout=conn_timeout)
+            tunnel.terminate()
+            tunnel.wait(timeout=conn_timeout)
 
-        logger_local.debug('[CHANNEL] state: disconnected')
+        logger_local.debug('[TUNNEL] state: disconnected')
 
-        mutate(ctx, 'ssh.channel', None)
+        mutate(ctx, 'ssh.tunnel', None)
         mutate(ctx, 'ssh.is_connected', False)
