@@ -9,13 +9,13 @@ from yaggy.utils import pick, mutate
 
 
 def failed(ctx, backref):
-    path = '__lastres' if backref is None else f'results.{backref}'
+    path = '__lastrun' if backref is None else f'results.{backref}'
     res = pick(ctx, path)
     return res.returncode != 0
 
 
 def succeed(ctx, backref):
-    path = '__lastres' if backref is None else f'results.{backref}'
+    path = '__lastrun' if backref is None else f'results.{backref}'
     res = pick(ctx, path)
     return res.returncode == 0
 
@@ -83,6 +83,6 @@ def execute_cmd(ctx, raise_on_error=True, remote=False, predicate=None,
               capture_output=True,
               encoding='utf-8')
 
-    mutate(ctx, '__lastres', res)
+    mutate(ctx, '__lastrun', res)
     if ref:
         mutate(ctx, f'results.{ref}', res)
