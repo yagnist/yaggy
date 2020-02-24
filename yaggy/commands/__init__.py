@@ -5,13 +5,14 @@ import re
 from .cmd_connect import call_connect, call_disconnect
 from .cmd_local import (call_lrun, call_lrun_exclamation,
                         call_lfailed, call_lsucceed)
-from .cmd_misc import (validate_include, call_include,
-                       call_tag, call_untag, call_echo)
+from .cmd_misc import call_include, call_tag, call_untag, call_echo
 from .cmd_remote import (call_run, call_run_exclamation,
                          call_failed, call_succeed)
-from .cmd_vars import validate_vars, call_vars, validate_secrets, call_secrets
+from .cmd_vars import call_vars, call_secrets
 
-from .validators import no_ref, no_backref, no_args, has_args
+from .validators import (no_ref, no_backref, no_args, has_args,
+                         validate_vars, validate_secrets,
+                         validate_include, validate_tag, validate_untag)
 
 
 COMMANDS = {
@@ -19,6 +20,7 @@ COMMANDS = {
         'validators': [
             no_ref,
             no_backref,
+            has_args,
             validate_vars,
         ],
         'call': call_vars,
@@ -27,6 +29,7 @@ COMMANDS = {
         'validators': [
             no_ref,
             no_backref,
+            has_args,
             validate_secrets,
         ],
         'call': call_secrets,
@@ -39,7 +42,10 @@ COMMANDS = {
         ],
         'call': call_connect,
     },
-    'RECONNECT': {},
+    'RECONNECT': {
+        'validators': [
+        ],
+    },
     'DISCONNECT': {
         'validators': [
             no_ref,
@@ -60,6 +66,7 @@ COMMANDS = {
         'validators': [
             no_ref,
             no_backref,
+            validate_tag,
         ],
         'call': call_tag,
     },
@@ -67,6 +74,7 @@ COMMANDS = {
         'validators': [
             no_ref,
             no_backref,
+            validate_untag,
         ],
         'call': call_untag,
     },

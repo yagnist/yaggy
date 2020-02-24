@@ -1,26 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import os
-import shlex
-import shutil
 import subprocess
 
 import qtoml
 
-from ..exceptions import YaggySyntaxError
-from ..utils import mergedict, pick
-
-
-def validate_vars(**kwargs):
-    basedir = kwargs['basedir']
-    args = kwargs['args']
-
-    filename = os.path.join(basedir, args.strip())
-
-    if not os.path.isfile(filename):
-        raise FileNotFoundError(filename)
-
-    return {'to_load': filename}
+from yaggy.utils import mergedict, pick
 
 
 def call_vars(ctx, **kwargs):
@@ -35,34 +19,6 @@ def call_vars(ctx, **kwargs):
     ctx['vars'] = mergedict(current, data)
 
     logger.debug('[VARS] "%(args)s" file loaded', kwargs)
-
-
-def validate_secrets(**kwargs):
-    basedir = kwargs['basedir']
-    args = kwargs['args']
-
-    parts = shlex.split(args)
-
-    if not parts:
-        raise YaggySyntaxError(
-            'SECRETS command requires an argument to be specified '
-            '(executable to call returning toml file '
-            'or a path to toml file to load)')
-
-    executable = shutil.which(parts[0])
-
-    if executable is None and len(parts) == 1:
-        executable = shutil.which(os.path.join(basedir, parts[0]))
-
-    if executable is None:
-        filename = os.path.join(basedir, shlex.quote(args.strip()))
-
-        if not os.path.isfile(filename):
-            raise FileNotFoundError(filename)
-
-        return {'to_load': filename}
-
-    return {'to_exec': [executable] + parts[1:]}
 
 
 def call_secrets(ctx, **kwargs):

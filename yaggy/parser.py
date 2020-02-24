@@ -68,22 +68,8 @@ def parse(filename, tags=None, refs=None):
             msg = f'Reference "{ref}" is already taken, please use another'
             raise YaggySyntaxError(msg)
 
-        if cmdname == 'INCLUDE':
-            to_include = os.path.join(basedir, args)
-        elif cmdname == 'TAG':
-            if args in tags:
-                # TODO better message including filename and line number
-                msg = f'Tag "{args}" already in use, please use another'
-                raise YaggySyntaxError(msg)
-            tags.add(args)
-        elif cmdname == 'UNTAG':
-            if args not in tags:
-                # TODO better message including filename and line number
-                msg = f'Tag "{args}" is unknown, unable to untag'
-                raise YaggySyntaxError(msg)
-            tags.remove(args)
-
-        refs.add(ref)
+        assert 'validators' in cmd
+        assert isinstance(cmd['validators'], (list, tuple))
 
         parsed = {
             'cmdname': cmdname,
@@ -95,13 +81,22 @@ def parse(filename, tags=None, refs=None):
             'basedir': basedir,
         }
 
-        assert 'validators' in cmd
-        assert isinstance(cmd['validators'], (list, tuple))
-
         for validator in cmd['validators']:
             validate_res = validator(**parsed)
             if validate_res is not None and isinstance(validate_res, dict):
                 parsed.update(validate_res)
+
+        if cmdname == 'INCLUDE':
+            to_include = os.path.join(basedir, args)
+        elif cmdname == 'TAG':
+            tags.add(args)
+            parsed['tags'] = tuple(tags)
+        elif cmdname == 'UNTAG':
+            tags.remove(args)
+            parsed['tags'] = tuple(tags)
+
+        if ref is not None:
+            refs.add(ref)
 
         yield cmd, parsed
 

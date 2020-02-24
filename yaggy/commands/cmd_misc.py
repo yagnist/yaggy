@@ -1,20 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os
-
-from ..utils import pick
-
-
-def validate_include(**kwargs):
-    basedir = kwargs['basedir']
-    args = kwargs['args']
-
-    filename = os.path.join(basedir, args.strip())
-
-    if not os.path.isfile(filename):
-        raise FileNotFoundError(filename)
-
-    return {'to_include': filename}
+from yaggy.utils import pick
 
 
 def call_include(ctx, **kwargs):
