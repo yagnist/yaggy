@@ -37,7 +37,7 @@ def no_args(**kwargs):
 def has_args(**kwargs):
     args = kwargs['args']
 
-    if not args.strip():
+    if not args:
         cmdname = kwargs['cmdname']
         raise YaggySyntaxError(f'{cmdname} command expects some arguments')
 
@@ -46,7 +46,7 @@ def validate_vars(**kwargs):
     basedir = kwargs['basedir']
     args = kwargs['args']
 
-    filename = os.path.join(basedir, args.strip())
+    filename = os.path.join(basedir, args)
 
     if not os.path.isfile(filename):
         raise FileNotFoundError(filename)
@@ -66,7 +66,7 @@ def validate_secrets(**kwargs):
         executable = shutil.which(os.path.join(basedir, parts[0]))
 
     if executable is None:
-        filename = os.path.join(basedir, shlex.quote(args.strip()))
+        filename = os.path.join(basedir, shlex.quote(args))
 
         if not os.path.isfile(filename):
             raise FileNotFoundError(filename)
@@ -80,7 +80,7 @@ def validate_include(**kwargs):
     basedir = kwargs['basedir']
     args = kwargs['args']
 
-    filename = os.path.join(basedir, args.strip())
+    filename = os.path.join(basedir, args)
 
     if not os.path.isfile(filename):
         raise FileNotFoundError(filename)
@@ -93,14 +93,21 @@ def validate_tag(**kwargs):
     tag = kwargs['args']
 
     if tag in tags:
-        msg = f'Tag "{tag}" is already in use, please use another'
+        msg = f'TAG "{tag}" is already in use, please use another'
         raise YaggySyntaxError(msg)
+
+    return {'tags': tags + (tag, )}
 
 
 def validate_untag(**kwargs):
     tags = kwargs['tags']
     tag = kwargs['args']
 
-    if tag not in tags:
-        msg = f'Tag "{tag}" is unknown, unable to untag'
+    if not tags or tag not in tags:
+        msg = f'TAG "{tag}" is unknown, unable to untag'
         raise YaggySyntaxError(msg)
+    if tags[-1] != tag:
+        msg = f'TAG/UNTAG pair "{tags[-1]}/{tag}" differs, unable to untag'
+        raise YaggySyntaxError(msg)
+
+    return {'tags': tags[:-1]}

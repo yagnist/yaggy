@@ -202,6 +202,8 @@ def command_parts(line):
     cmdname = parts.group('command')
     backref = parts.group('backref')
     args = parts.group('args')
+    if args:
+        args = args.strip()
 
     cmd = COMMANDS[cmdname]
 

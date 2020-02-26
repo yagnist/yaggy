@@ -35,8 +35,8 @@ def parse(filename, tags=None, refs=None):
     if not os.path.isfile(filename):
         raise FileNotFoundError(filename)
 
-    tags = set() if tags is None else tags
-    assert isinstance(tags, set)
+    tags = tuple() if tags is None else tags
+    assert isinstance(tags, tuple)
 
     refs = set() if refs is None else refs
     assert isinstance(refs, set)
@@ -87,13 +87,9 @@ def parse(filename, tags=None, refs=None):
                 parsed.update(validate_res)
 
         if cmdname == 'INCLUDE':
-            to_include = os.path.join(basedir, args)
-        elif cmdname == 'TAG':
-            tags.add(args)
-            parsed['tags'] = tuple(tags)
-        elif cmdname == 'UNTAG':
-            tags.remove(args)
-            parsed['tags'] = tuple(tags)
+            to_include = parsed['to_include']
+        elif cmdname in ('TAG', 'UNTAG'):
+            tags = parsed['tags']
 
         if ref is not None:
             refs.add(ref)
