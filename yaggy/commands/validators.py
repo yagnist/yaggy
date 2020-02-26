@@ -4,7 +4,9 @@ import os
 import shlex
 import shutil
 
-from yaggy.exceptions import YaggySyntaxError
+
+is_valid = True
+is_invalid = False
 
 
 def no_ref(**kwargs):
@@ -13,7 +15,9 @@ def no_ref(**kwargs):
     if ref is not None:
         cmdname = kwargs['cmdname']
         msg = f'{cmdname} command does not expect {ref} in arguments'
-        raise YaggySyntaxError(msg)
+        return is_valid, msg
+
+    return is_valid, None
 
 
 def no_backref(**kwargs):
@@ -22,7 +26,9 @@ def no_backref(**kwargs):
     if backref is not None:
         cmdname = kwargs['cmdname']
         msg = f'{cmdname} command does not expect {backref} in arguments'
-        raise YaggySyntaxError(msg)
+        return is_invalid, msg
+
+    return is_valid, None
 
 
 def no_args(**kwargs):
@@ -30,8 +36,10 @@ def no_args(**kwargs):
 
     if args:
         cmdname = kwargs['cmdname']
-        raise YaggySyntaxError(
-            f'{cmdname} command does not expect any arguments')
+        msg = f'{cmdname} command does not expect any arguments'
+        return is_invalid, msg
+
+    return is_valid, None
 
 
 def has_args(**kwargs):
@@ -39,7 +47,10 @@ def has_args(**kwargs):
 
     if not args:
         cmdname = kwargs['cmdname']
-        raise YaggySyntaxError(f'{cmdname} command expects some arguments')
+        msg = f'{cmdname} command expects some arguments'
+        return is_invalid, msg
+
+    return is_valid, None
 
 
 def validate_vars(**kwargs):
@@ -49,9 +60,10 @@ def validate_vars(**kwargs):
     filename = os.path.join(basedir, args)
 
     if not os.path.isfile(filename):
-        raise FileNotFoundError(filename)
+        msg = f'VARS "{filename}" file not found'
+        return is_invalid, msg
 
-    return {'to_load': filename}
+    return is_valid, {'to_load': filename}
 
 
 def validate_secrets(**kwargs):
@@ -69,11 +81,12 @@ def validate_secrets(**kwargs):
         filename = os.path.join(basedir, shlex.quote(args))
 
         if not os.path.isfile(filename):
-            raise FileNotFoundError(filename)
+            msg = f'SECRETS "{filename}" file not found'
+            return is_invalid, msg
 
-        return {'to_load': filename}
+        return is_valid, {'to_load': filename}
 
-    return {'to_exec': [executable] + parts[1:]}
+    return is_valid, {'to_exec': [executable] + parts[1:]}
 
 
 def validate_include(**kwargs):
@@ -83,9 +96,10 @@ def validate_include(**kwargs):
     filename = os.path.join(basedir, args)
 
     if not os.path.isfile(filename):
-        raise FileNotFoundError(filename)
+        msg = f'INCLUDE "{filename}" file not found'
+        return is_invalid, msg
 
-    return {'to_include': filename}
+    return is_valid, {'to_include': filename}
 
 
 def validate_tag(**kwargs):
@@ -94,9 +108,9 @@ def validate_tag(**kwargs):
 
     if tag in tags:
         msg = f'TAG "{tag}" is already in use, please use another'
-        raise YaggySyntaxError(msg)
+        return is_invalid, msg
 
-    return {'tags': tags + (tag, )}
+    return is_valid, {'tags': tags + (tag, )}
 
 
 def validate_untag(**kwargs):
@@ -105,9 +119,9 @@ def validate_untag(**kwargs):
 
     if not tags or tag not in tags:
         msg = f'TAG "{tag}" is unknown, unable to untag'
-        raise YaggySyntaxError(msg)
+        return is_invalid, msg
     if tags[-1] != tag:
         msg = f'TAG/UNTAG pair "{tags[-1]}/{tag}" differs, unable to untag'
-        raise YaggySyntaxError(msg)
+        return is_invalid, msg
 
-    return {'tags': tags[:-1]}
+    return is_valid, {'tags': tags[:-1]}

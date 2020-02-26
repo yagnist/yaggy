@@ -11,7 +11,7 @@ def load(filename):
     with open(filename, 'rt', encoding='utf-8') as f:
         buf = []
 
-        for line in f:
+        for linenum, line in enumerate(f, start=1):
             line = line.rstrip()
             is_comment = line.startswith('#')
             if not line or is_comment:
@@ -23,14 +23,16 @@ def load(filename):
                 buf.append(line)
                 cmd = (x.rstrip('\\').lstrip() for x in buf)
                 cmd = ''.join(cmd)
+                start = linenum - len(buf) + 1
+                lines = f'{start}-{linenum}'
                 buf = []
-                yield cmd
+                yield lines, cmd
                 continue
 
-            yield line
+            yield linenum, line
 
 
-def parse(filename, tags=None, refs=None):
+def parse(filename, tags=None, refs=None, rootdir=None):
 
     if not os.path.isfile(filename):
         raise FileNotFoundError(filename)
@@ -42,31 +44,30 @@ def parse(filename, tags=None, refs=None):
     assert isinstance(refs, set)
 
     basedir = os.path.dirname(filename)
+    if rootdir is None:
+        rootdir = basedir
+    relpath = os.path.relpath(filename, start=rootdir)
 
-    for line in load(filename):
+    for linenum, line in load(filename):
 
         to_include = validate_res = None
         cmdname, cmd, ref, backref, args = command_parts(line)
 
         if cmd is None:
-            # TODO better message including filename and line number
             msg = f'Unknown command in line "{line}"'
-            raise YaggySyntaxError(msg)
+            raise YaggySyntaxError(relpath, linenum, msg)
 
         if ref is not None and ref == backref:
-            # TODO better message including filename and line number
             msg = f'Backreference equals to reference "{ref}"'
-            raise YaggySyntaxError(msg)
+            raise YaggySyntaxError(relpath, linenum, msg)
 
         if backref is not None and backref not in refs:
-            # TODO better message including filename and line number
             msg = f'Unknown backreference "{backref}"'
-            raise YaggySyntaxError(msg)
+            raise YaggySyntaxError(relpath, linenum, msg)
 
         if ref is not None and ref in refs:
-            # TODO better message including filename and line number
             msg = f'Reference "{ref}" is already taken, please use another'
-            raise YaggySyntaxError(msg)
+            raise YaggySyntaxError(relpath, linenum, msg)
 
         assert 'validators' in cmd
         assert isinstance(cmd['validators'], (list, tuple))
@@ -82,9 +83,11 @@ def parse(filename, tags=None, refs=None):
         }
 
         for validator in cmd['validators']:
-            validate_res = validator(**parsed)
-            if validate_res is not None and isinstance(validate_res, dict):
-                parsed.update(validate_res)
+            is_valid, res = validator(**parsed)
+            if not is_valid:
+                raise YaggySyntaxError(relpath, linenum, res)
+            if res is not None and isinstance(res, dict):
+                parsed.update(res)
 
         if cmdname == 'INCLUDE':
             to_include = parsed['to_include']
@@ -97,4 +100,4 @@ def parse(filename, tags=None, refs=None):
         yield cmd, parsed
 
         if to_include is not None:
-            yield from parse(to_include, tags=tags, refs=refs)
+            yield from parse(to_include, tags=tags, refs=refs, rootdir=rootdir)

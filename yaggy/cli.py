@@ -47,12 +47,11 @@ def runner(filename, **kwargs):
     try:
         scenario = list(parse(filename))
     except YaggyError as e:
-        msg = str(e)
-        logger.exception('Parsing error: "%s"', msg)
+        logger.error('%s', str(e))
         sys.exit(1)
     except FileNotFoundError as e:
         msg = str(e)
-        logger.exception('File not found: "%s"', msg)
+        logger.error('File not found: "%s"', msg)
         sys.exit(1)
 
     try:
