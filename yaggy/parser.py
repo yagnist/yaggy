@@ -32,7 +32,7 @@ def load(filename):
             yield linenum, line
 
 
-def parse(filename, tags=None, refs=None, rootdir=None):
+def parse(filename, tags=None, refs=None, vstate=None, rootdir=None):
 
     if not os.path.isfile(filename):
         raise FileNotFoundError(filename)
@@ -47,6 +47,9 @@ def parse(filename, tags=None, refs=None, rootdir=None):
     if rootdir is None:
         rootdir = basedir
     relpath = os.path.relpath(filename, start=rootdir)
+
+    vstate = {} if vstate is None else vstate
+    assert isinstance(vstate, dict)
 
     for linenum, line in load(filename):
 
@@ -89,6 +92,13 @@ def parse(filename, tags=None, refs=None, rootdir=None):
             if res is not None and isinstance(res, dict):
                 parsed.update(res)
 
+        if 'vstate' in cmd and callable(cmd['vstate']):
+            is_valid, res = cmd['vstate'](vstate, **parsed)
+            if not is_valid:
+                raise YaggySyntaxError(relpath, linenum, res)
+            if res is not None and isinstance(res, dict):
+                vstate.update(res)
+
         if cmdname == 'INCLUDE':
             to_include = parsed['to_include']
         elif cmdname in ('TAG', 'UNTAG'):
@@ -100,4 +110,5 @@ def parse(filename, tags=None, refs=None, rootdir=None):
         yield cmd, parsed
 
         if to_include is not None:
-            yield from parse(to_include, tags=tags, refs=refs, rootdir=rootdir)
+            yield from parse(to_include, tags=tags, refs=refs,
+                             vstate=vstate, rootdir=rootdir)

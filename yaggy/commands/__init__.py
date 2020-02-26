@@ -13,6 +13,9 @@ from .cmd_vars import call_vars, call_secrets
 from .validators import (no_ref, no_backref, no_args, has_args,
                          validate_vars, validate_secrets,
                          validate_include, validate_tag, validate_untag)
+from .vstate import (vstate_connect, vstate_disconnect,
+                     vstate_run, vstate_conditional_run,
+                     vstate_lrun, vstate_conditional_lrun)
 
 
 COMMANDS = {
@@ -41,6 +44,7 @@ COMMANDS = {
             no_args,
         ],
         'call': call_connect,
+        'vstate': vstate_connect,
     },
     'RECONNECT': {
         'validators': [
@@ -53,6 +57,7 @@ COMMANDS = {
             no_args,
         ],
         'call': call_disconnect,
+        'vstate': vstate_disconnect,
     },
     'INCLUDE': {
         'validators': [
@@ -91,6 +96,7 @@ COMMANDS = {
             has_args,
         ],
         'call': call_run,
+        'vstate': vstate_run,
     },
     'RUN!': {
         'validators': [
@@ -98,6 +104,7 @@ COMMANDS = {
             has_args,
         ],
         'call': call_run_exclamation,
+        'vstate': vstate_run,
     },
     'FAILED?': {
         'validators': [
@@ -105,6 +112,7 @@ COMMANDS = {
             has_args,
         ],
         'call': call_failed,
+        'vstate': vstate_conditional_run,
     },
     'SUCCEED?': {
         'validators': [
@@ -112,6 +120,7 @@ COMMANDS = {
             has_args,
         ],
         'call': call_succeed,
+        'vstate': vstate_conditional_run,
     },
     'CHANGED?': {
         'validators': [
@@ -144,6 +153,7 @@ COMMANDS = {
             has_args,
         ],
         'call': call_lrun,
+        'vstate': vstate_lrun,
     },
     'LRUN!': {
         'validators': [
@@ -151,6 +161,7 @@ COMMANDS = {
             has_args,
         ],
         'call': call_lrun_exclamation,
+        'vstate': vstate_lrun,
     },
     'LFAILED?': {
         'validators': [
@@ -158,6 +169,7 @@ COMMANDS = {
             has_args,
         ],
         'call': call_lfailed,
+        'vstate': vstate_conditional_lrun,
     },
     'LSUCCEED?': {
         'validators': [
@@ -165,6 +177,7 @@ COMMANDS = {
             has_args,
         ],
         'call': call_lsucceed,
+        'vstate': vstate_conditional_lrun,
     },
     'LTEMPLATE': {
         'validators': [
