@@ -50,7 +50,7 @@ def parse(filename, tags=None, refs=None, rootdir=None):
 
     for linenum, line in load(filename):
 
-        to_include = validate_res = None
+        to_include = None
         cmdname, cmd, ref, backref, args = command_parts(line)
 
         if cmd is None:
