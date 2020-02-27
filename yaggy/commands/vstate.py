@@ -39,7 +39,7 @@ def vstate_conditional_run(vstate, **kwargs):
     if not is_connected:
         return is_invalid, f'{cmdname} not connected, unable to run command'
 
-    if not run_called or not lrun_called:
+    if not run_called and not lrun_called:
         return is_invalid, (f'{cmdname} no RUN/RUN! or LRUN/LRUN! command '
                             f'appeared before, unable to run command')
 
@@ -56,7 +56,7 @@ def vstate_conditional_lrun(vstate, **kwargs):
     run_called = vstate.get('run_called', False)
     lrun_called = vstate.get('lrun_called', False)
 
-    if not run_called or not lrun_called:
+    if not run_called and not lrun_called:
         return is_invalid, (f'{cmdname} no RUN/RUN! or LRUN/LRUN! command '
                             f'appeared before, unable to run command')
 
