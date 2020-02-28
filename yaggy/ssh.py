@@ -80,7 +80,7 @@ def connect(ctx):
 
         raise YaggyConnectionError('[TUNNEL] connection failed')
 
-    logger_local.debug('[TUNNEL] state: connected')
+    logger_local.info('# [TUNNEL] state: connected')
 
     mutate(ctx, 'ssh.tunnel', tunnel)
     mutate(ctx, 'ssh.is_connected', True)
@@ -102,7 +102,7 @@ def disconnect(ctx):
             tunnel.terminate()
             tunnel.wait(timeout=conn_timeout)
 
-        logger_local.debug('[TUNNEL] state: disconnected')
+        logger_local.info('# [TUNNEL] state: disconnected')
 
         mutate(ctx, 'ssh.tunnel', None)
         mutate(ctx, 'ssh.is_connected', False)

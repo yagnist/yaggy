@@ -18,7 +18,7 @@ def call_vars(ctx, **kwargs):
     current = pick(ctx, 'vars')
     ctx['vars'] = mergedict(current, data)
 
-    logger.debug('[VARS] "%(args)s" file loaded', kwargs)
+    logger.info('# [VARS] "%(args)s" file loaded', kwargs)
 
 
 def call_secrets(ctx, **kwargs):
@@ -31,18 +31,18 @@ def call_secrets(ctx, **kwargs):
         with open(filename, 'rt', encoding='utf-8') as f:
             data = f.read()
 
-        msg = '[SECRETS] "%(args)s" file loaded'
+        msg = '# [SECRETS] "%(args)s" file loaded'
     else:
         cmd = kwargs['to_exec']
 
         res = subprocess.run(cmd, capture_output=True, encoding='utf-8')
         data = res.stdout
 
-        msg = '[SECRETS] "%(args)s" command executed and loaded'
+        msg = '# [SECRETS] "%(args)s" command executed and loaded'
 
     data = qtoml.loads(data)
 
     current = pick(ctx, 'secrets')
     ctx['secrets'] = mergedict(current, data)
 
-    logger.debug(msg, kwargs)
+    logger.info(msg, kwargs)

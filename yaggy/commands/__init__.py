@@ -27,6 +27,7 @@ COMMANDS = {
             validate_vars,
         ],
         'call': call_vars,
+        'category': 'internal',
     },
     'SECRETS': {
         'validators': [
@@ -36,6 +37,7 @@ COMMANDS = {
             validate_secrets,
         ],
         'call': call_secrets,
+        'category': 'internal',
     },
     'CONNECT': {
         'validators': [
@@ -45,10 +47,12 @@ COMMANDS = {
         ],
         'call': call_connect,
         'vstate': vstate_connect,
+        'category': 'conn',
     },
     'RECONNECT': {
         'validators': [
         ],
+        'category': 'conn',
     },
     'DISCONNECT': {
         'validators': [
@@ -58,6 +62,7 @@ COMMANDS = {
         ],
         'call': call_disconnect,
         'vstate': vstate_disconnect,
+        'category': 'conn',
     },
     'INCLUDE': {
         'validators': [
@@ -66,6 +71,7 @@ COMMANDS = {
             validate_include,
         ],
         'call': call_include,
+        'category': 'internal',
     },
     'TAG': {
         'validators': [
@@ -74,6 +80,7 @@ COMMANDS = {
             validate_tag,
         ],
         'call': call_tag,
+        'category': 'internal',
     },
     'UNTAG': {
         'validators': [
@@ -82,6 +89,7 @@ COMMANDS = {
             validate_untag,
         ],
         'call': call_untag,
+        'category': 'internal',
     },
     'ECHO': {
         'validators': [
@@ -89,6 +97,7 @@ COMMANDS = {
             no_backref,
         ],
         'call': call_echo,
+        'category': 'internal',
     },
     'RUN': {
         'validators': [
@@ -97,6 +106,7 @@ COMMANDS = {
         ],
         'call': call_run,
         'vstate': vstate_run,
+        'category': 'remote',
     },
     'RUN!': {
         'validators': [
@@ -105,6 +115,7 @@ COMMANDS = {
         ],
         'call': call_run_exclamation,
         'vstate': vstate_run,
+        'category': 'remote',
     },
     'FAILED?': {
         'validators': [
@@ -113,6 +124,7 @@ COMMANDS = {
         ],
         'call': call_failed,
         'vstate': vstate_conditional_run,
+        'category': 'remote',
     },
     'SUCCEED?': {
         'validators': [
@@ -121,18 +133,21 @@ COMMANDS = {
         ],
         'call': call_succeed,
         'vstate': vstate_conditional_run,
+        'category': 'remote',
     },
     'CHANGED?': {
         'validators': [
             no_ref,
             has_args,
         ],
+        'category': 'remote',
     },
     'COPY': {
         'validators': [
             no_backref,
             has_args,
         ],
+        'category': 'local',
     },
     'FETCH': {
         'validators': [
@@ -140,12 +155,14 @@ COMMANDS = {
             no_backref,
             has_args,
         ],
+        'category': 'local',
     },
     'TEMPLATE': {
         'validators': [
             no_backref,
             has_args,
         ],
+        'category': 'local',
     },
     'LRUN': {
         'validators': [
@@ -154,6 +171,7 @@ COMMANDS = {
         ],
         'call': call_lrun,
         'vstate': vstate_lrun,
+        'category': 'local',
     },
     'LRUN!': {
         'validators': [
@@ -162,6 +180,7 @@ COMMANDS = {
         ],
         'call': call_lrun_exclamation,
         'vstate': vstate_lrun,
+        'category': 'local',
     },
     'LFAILED?': {
         'validators': [
@@ -170,6 +189,7 @@ COMMANDS = {
         ],
         'call': call_lfailed,
         'vstate': vstate_conditional_lrun,
+        'category': 'local',
     },
     'LSUCCEED?': {
         'validators': [
@@ -178,18 +198,21 @@ COMMANDS = {
         ],
         'call': call_lsucceed,
         'vstate': vstate_conditional_lrun,
+        'category': 'local',
     },
     'LTEMPLATE': {
         'validators': [
             no_backref,
             has_args,
         ],
+        'category': 'local',
     },
     'LCHANGED?': {
         'validators': [
             no_backref,
             has_args,
         ],
+        'category': 'local',
     },
 }
 

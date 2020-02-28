@@ -7,21 +7,21 @@ def call_include(ctx, **kwargs):
 
     logger = pick(ctx, 'logger.local')
 
-    logger.debug('[INCLUDE] "%(args)s" file included', kwargs)
+    logger.info('# [INCLUDE] "%(args)s" file included', kwargs)
 
 
 def call_tag(ctx, **kwargs):
 
     logger = pick(ctx, 'logger.local')
 
-    logger.debug('[TAG] "%(args)s" tag added', kwargs)
+    logger.info('# [TAG] "%(args)s" tag added', kwargs)
 
 
 def call_untag(ctx, **kwargs):
 
     logger = pick(ctx, 'logger.local')
 
-    logger.debug('[UNTAG] "%(args)s" tag removed', kwargs)
+    logger.info('# [UNTAG] "%(args)s" tag removed', kwargs)
 
 
 def call_echo(ctx, **kwargs):

@@ -35,6 +35,8 @@ from . import __version__ as version
     help='Must be set to actually run the scenario.')
 def runner(filename, **kwargs):
 
+    dry_run = kwargs.get('run', False) is False
+
     ctx = setup_context(filename, **kwargs)
 
     logger = pick(ctx, 'logger.local')
@@ -43,6 +45,10 @@ def runner(filename, **kwargs):
     logger.info('***** Yaggy version:%s localtime:%s *****',
                 version,
                 dt.strftime('"%Y-%m-%d %H:%M:%S"'))
+    if dry_run:
+        logger.info('')
+        logger.info(
+            '!!!!! dry run mode, will try to connect to server only !!!!!')
 
     try:
         scenario = list(parse(filename))
@@ -56,18 +62,28 @@ def runner(filename, **kwargs):
 
     try:
 
-        for cmd, kwargs in scenario:
+        safe_commands = ('ECHO', 'CONNECT', 'DISCONNECT', 'INCLUDE', 'VARS',
+                         'SECRETS', 'TAG', 'UNTAG')
+        def is_internal(command):
+            category = pick(command, 'category')
+            return category == 'internal'
+
+        for cmd, kw in scenario:
             logger.debug('')
-            logger.debug('# %(line)s', kwargs)
+            if not is_internal(cmd):
+                logger.debug('# %(line)s', kw)
 
-            caller = cmd.get('call')
+            cmdname = pick(kw, 'cmdname')
+            caller = pick(cmd, 'call')
+
             if callable(caller):
+                if dry_run and cmdname not in safe_commands:
+                    continue
                 try:
-                    caller(ctx, **kwargs)
+                    caller(ctx, **kw)
                 except Exception as e:
-                    logger.error('"%(cmdname)s" command failed', kwargs)
+                    logger.error('"%(cmdname)s" command failed', kw)
 
-                    msg = str(e)
                     logger.exception(e)
                     sys.exit(1)
 
