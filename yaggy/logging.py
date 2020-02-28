@@ -42,12 +42,18 @@ class ColoredStreamHandler(logging.StreamHandler):
     def emit(self, record):
 
         fg = self.COLORS.get(record.levelno)
+        body_color = None
         is_local = record.name.endswith('local')
         is_remote = record.name.endswith('remote')
 
         try:
             msg = self.format(record)
             err = record.levelno in (logging.ERROR, logging.CRITICAL)
+
+            # NB. just empty line in log
+            if not getattr(record, 'message'):
+                click.echo('', err=err)
+                return
             if hasattr(self.formatter, 'indent'):
                 width = len(self.formatter.indent)
                 lines = msg.splitlines(keepends=True)
@@ -105,7 +111,7 @@ def logging_config(filename, verbose):
         },
         'handlers': {
             'console': {
-                'level': 'INFO',
+                'level': level,
                 'class': 'yaggy.logging.ColoredStreamHandler',
                 'formatter': 'indented',
             },
