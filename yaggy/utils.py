@@ -32,7 +32,7 @@ def pick(ctx, path):
             ctx = ctx[key]
         else:
             return
-    return ctx[parts[-1]]
+    return ctx.get(parts[-1])
 
 
 def mutate(ctx, path, value):
