@@ -7,12 +7,8 @@ import datetime
 import click
 
 from .context import setup_context
-from .exceptions import YaggyError
-from .parser import parse
 from .ssh import disconnect
 from .utils import pick
-
-from . import __version__ as version
 
 
 @click.command(help='Run yaggy scenario from specified file.')
@@ -36,54 +32,32 @@ from . import __version__ as version
     help='Must be set to actually run the scenario.')
 def runner(filename, **kwargs):
 
-    dry_run = kwargs.get('run', False) is False
+    dry_run = not kwargs['run']
 
-    ctx = setup_context(filename, **kwargs)
+    ctx, scenario = setup_context(filename, **kwargs)
 
     logger = pick(ctx, 'logger.local')
-    dt = pick(ctx, 'started_at')
-
-    logger.info('***** Yaggy version:%s localtime:%s *****',
-                version,
-                dt.strftime('"%Y-%m-%d %H:%M:%S"'))
-    if dry_run:
-        logger.info('')
-        logger.info(
-            '!!!!! dry run mode, will try to connect to server only !!!!!')
-
-    try:
-        scenario = list(parse(filename))
-    except YaggyError as e:
-        logger.error('%s', str(e))
-        sys.exit(1)
-    except FileNotFoundError as e:
-        msg = str(e)
-        logger.error('File not found: "%s"', msg)
-        sys.exit(1)
 
     try:
 
         safe_commands = ('ECHO', 'CONNECT', 'DISCONNECT', 'INCLUDE', 'VARS',
                          'SECRETS', 'TAG', 'UNTAG')
-        def is_internal(command):
-            category = pick(command, 'category')
-            return category == 'internal'
 
-        for cmd, kw in scenario:
+        for cmd, parsed in scenario:
             logger.debug('')
-            if not is_internal(cmd):
-                logger.debug('# %(line)s', kw)
+            if not pick(cmd, 'is_internal'):
+                logger.debug('# %(line)s', parsed)
 
-            cmdname = pick(kw, 'cmdname')
+            cmdname = pick(parsed, 'cmdname')
             caller = pick(cmd, 'call')
 
             if callable(caller):
                 if dry_run and cmdname not in safe_commands:
                     continue
                 try:
-                    caller(ctx, **kw)
+                    caller(ctx, **parsed)
                 except Exception as e:
-                    logger.error('"%(cmdname)s" command failed', kw)
+                    logger.error('"%(cmdname)s" command failed', parsed)
 
                     logger.exception(e)
                     sys.exit(1)
