@@ -4,10 +4,10 @@ import sys
 
 import click
 
-from .context import setup_context
+from .context import setup_context, gather_tags
 from .parser import run_parser
 from .ssh import disconnect
-from .utils import pick
+from .utils import pick, mutate
 
 
 @click.command(help='Run yaggy scenario from specified file.')
@@ -38,6 +38,9 @@ def runner(filename, **kwargs):
     logger = pick(ctx, 'logger.local')
 
     scenario = run_parser(filename, logger)
+
+    tags = gather_tags(scenario)
+    mutate(ctx, 'tags', tags)
 
     try:
 

@@ -8,6 +8,7 @@ import pwd
 from . import ssh, __version__ as version
 
 from .logging import setup_logging, get_logger
+from .utils import pick
 
 
 def get_local_username():
@@ -81,3 +82,32 @@ def setup_context(filename, **kwargs):
     }
 
     return ctx
+
+
+def gather_tags(scenario):
+    tree = {}
+    pseudotree = {}
+    current = []
+
+    lines = (x for _, x in scenario if pick(x, 'cmdname') in ('TAG', 'UNTAG'))
+
+    for parsed in lines:
+        cmdname = pick(parsed, 'cmdname')
+        args = pick(parsed, 'args')
+
+        if cmdname == 'TAG':
+            node = tree
+            for tag in current:
+                if tag not in node:
+                    node[tag] = {}
+                if tag not in pseudotree:
+                    pseudotree[tag] = []
+                node = node[tag]
+                pseudotree[tag].append(args)
+            node[args] = {}
+            current.append(args)
+        elif cmdname == 'UNTAG':
+            assert current[-1] == args
+            current = current[:-1]
+
+    return {'tree': tree, 'pseudotree': pseudotree}
