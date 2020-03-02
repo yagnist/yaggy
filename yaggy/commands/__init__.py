@@ -2,218 +2,36 @@
 
 import re
 
-from .cmd_connect import call_connect, call_disconnect
-from .cmd_local import (call_lrun, call_lrun_exclamation,
-                        call_lfailed, call_lsucceed)
-from .cmd_misc import call_include, call_tag, call_untag, call_echo
-from .cmd_remote import (call_run, call_run_exclamation,
-                         call_failed, call_succeed)
-from .cmd_vars import call_vars, call_secrets
-
-from .validators import (no_ref, no_backref, no_args, has_args,
-                         validate_vars, validate_secrets,
-                         validate_include, validate_tag, validate_untag)
-from .vstate import (vstate_connect, vstate_disconnect,
-                     vstate_run, vstate_conditional_run,
-                     vstate_lrun, vstate_conditional_lrun)
+from .cmd_connect import CMD_CONNECT, CMD_DISCONNECT, CMD_RECONNECT
+from .cmd_local import (CMD_LRUN, CMD_LRUN_EXCLAMATION,
+                        CMD_LFAILED, CMD_LSUCCEED, CMD_FETCH)
+from .cmd_misc import CMD_INCLUDE, CMD_TAG, CMD_UNTAG, CMD_ECHO
+from .cmd_remote import (CMD_RUN, CMD_RUN_EXCLAMATION,
+                         CMD_FAILED, CMD_SUCCEED, CMD_SYNC, CMD_CHANGED)
+from .cmd_vars import CMD_VARS, CMD_SECRETS
 
 
 COMMANDS = {
-    'VARS': {
-        'validators': [
-            no_ref,
-            no_backref,
-            has_args,
-            validate_vars,
-        ],
-        'call': call_vars,
-        'category': 'internal',
-    },
-    'SECRETS': {
-        'validators': [
-            no_ref,
-            no_backref,
-            has_args,
-            validate_secrets,
-        ],
-        'call': call_secrets,
-        'category': 'internal',
-    },
-    'CONNECT': {
-        'validators': [
-            no_ref,
-            no_backref,
-            no_args,
-        ],
-        'call': call_connect,
-        'vstate': vstate_connect,
-        'category': 'conn',
-    },
-    'RECONNECT': {
-        'validators': [
-        ],
-        'category': 'conn',
-    },
-    'DISCONNECT': {
-        'validators': [
-            no_ref,
-            no_backref,
-            no_args,
-        ],
-        'call': call_disconnect,
-        'vstate': vstate_disconnect,
-        'category': 'conn',
-    },
-    'INCLUDE': {
-        'validators': [
-            no_ref,
-            no_backref,
-            validate_include,
-        ],
-        'call': call_include,
-        'category': 'internal',
-    },
-    'TAG': {
-        'validators': [
-            no_ref,
-            no_backref,
-            validate_tag,
-        ],
-        'call': call_tag,
-        'category': 'internal',
-    },
-    'UNTAG': {
-        'validators': [
-            no_ref,
-            no_backref,
-            validate_untag,
-        ],
-        'call': call_untag,
-        'category': 'internal',
-    },
-    'ECHO': {
-        'validators': [
-            no_ref,
-            no_backref,
-        ],
-        'call': call_echo,
-        'category': 'internal',
-    },
-    'RUN': {
-        'validators': [
-            no_backref,
-            has_args,
-        ],
-        'call': call_run,
-        'vstate': vstate_run,
-        'category': 'remote',
-    },
-    'RUN!': {
-        'validators': [
-            no_backref,
-            has_args,
-        ],
-        'call': call_run_exclamation,
-        'vstate': vstate_run,
-        'category': 'remote',
-    },
-    'FAILED?': {
-        'validators': [
-            no_ref,
-            has_args,
-        ],
-        'call': call_failed,
-        'vstate': vstate_conditional_run,
-        'category': 'remote',
-    },
-    'SUCCEED?': {
-        'validators': [
-            no_ref,
-            has_args,
-        ],
-        'call': call_succeed,
-        'vstate': vstate_conditional_run,
-        'category': 'remote',
-    },
-    'CHANGED?': {
-        'validators': [
-            no_ref,
-            has_args,
-        ],
-        'category': 'remote',
-    },
-    'COPY': {
-        'validators': [
-            no_backref,
-            has_args,
-        ],
-        'category': 'local',
-    },
-    'FETCH': {
-        'validators': [
-            no_ref,
-            no_backref,
-            has_args,
-        ],
-        'category': 'local',
-    },
-    'TEMPLATE': {
-        'validators': [
-            no_backref,
-            has_args,
-        ],
-        'category': 'local',
-    },
-    'LRUN': {
-        'validators': [
-            no_backref,
-            has_args,
-        ],
-        'call': call_lrun,
-        'vstate': vstate_lrun,
-        'category': 'local',
-    },
-    'LRUN!': {
-        'validators': [
-            no_backref,
-            has_args,
-        ],
-        'call': call_lrun_exclamation,
-        'vstate': vstate_lrun,
-        'category': 'local',
-    },
-    'LFAILED?': {
-        'validators': [
-            no_ref,
-            has_args,
-        ],
-        'call': call_lfailed,
-        'vstate': vstate_conditional_lrun,
-        'category': 'local',
-    },
-    'LSUCCEED?': {
-        'validators': [
-            no_ref,
-            has_args,
-        ],
-        'call': call_lsucceed,
-        'vstate': vstate_conditional_lrun,
-        'category': 'local',
-    },
-    'LTEMPLATE': {
-        'validators': [
-            no_backref,
-            has_args,
-        ],
-        'category': 'local',
-    },
-    'LCHANGED?': {
-        'validators': [
-            no_backref,
-            has_args,
-        ],
-        'category': 'local',
-    },
+    'VARS': CMD_VARS,
+    'SECRETS': CMD_SECRETS,
+    'CONNECT': CMD_CONNECT,
+    'RECONNECT': CMD_RECONNECT,
+    'DISCONNECT': CMD_DISCONNECT,
+    'INCLUDE': CMD_INCLUDE,
+    'TAG': CMD_TAG,
+    'UNTAG': CMD_UNTAG,
+    'ECHO': CMD_ECHO,
+    'RUN': CMD_RUN,
+    'RUN!': CMD_RUN_EXCLAMATION,
+    'FAILED?': CMD_FAILED,
+    'SUCCEED?': CMD_SUCCEED,
+    'LRUN': CMD_LRUN,
+    'LRUN!': CMD_LRUN_EXCLAMATION,
+    'LFAILED?': CMD_LFAILED,
+    'LSUCCEED?': CMD_LSUCCEED,
+    'SYNC': CMD_SYNC,
+    'CHANGED?': CMD_CHANGED,
+    'FETCH': CMD_FETCH,
 }
 
 

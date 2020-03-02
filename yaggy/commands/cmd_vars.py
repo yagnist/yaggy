@@ -6,6 +6,8 @@ import qtoml
 
 from yaggy.utils import mergedict, pick
 
+from . import validators
+
 
 def call_vars(ctx, **kwargs):
     filename = kwargs['to_load']
@@ -46,3 +48,25 @@ def call_secrets(ctx, **kwargs):
     ctx['secrets'] = mergedict(current, data)
 
     logger.info(msg, kwargs)
+
+
+CMD_VARS = {
+    'validators': [
+        validators.no_ref,
+        validators.no_backref,
+        validators.has_args,
+        validators.validate_vars,
+    ],
+    'call': call_vars,
+    'is_internal': True,
+}
+CMD_SECRETS = {
+    'validators': [
+        validators.no_ref,
+        validators.no_backref,
+        validators.has_args,
+        validators.validate_secrets,
+    ],
+    'call': call_secrets,
+    'is_internal': True,
+}

@@ -5,6 +5,8 @@ from yaggy.utils import pick
 
 from .common import run
 
+from . import validators, vstate
+
 
 def call_connect(ctx, **kwargs):
 
@@ -30,3 +32,29 @@ def call_connect(ctx, **kwargs):
 def call_disconnect(ctx, **kwargs):
 
     disconnect(ctx)
+
+
+CMD_CONNECT = {
+    'validators': [
+        validators.no_ref,
+        validators.no_backref,
+        validators.no_args,
+    ],
+    'call': call_connect,
+    'vstate': vstate.vstate_connect,
+    'is_internal': False,
+}
+CMD_DISCONNECT = {
+    'validators': [
+        validators.no_ref,
+        validators.no_backref,
+        validators.no_args,
+    ],
+    'call': call_disconnect,
+    'vstate': vstate.vstate_disconnect,
+    'is_internal': False,
+}
+CMD_RECONNECT = {
+    'validators': [],
+    'is_internal': False,
+}

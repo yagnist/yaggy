@@ -11,6 +11,7 @@ from .exceptions import YaggyError
 from .parser import parse
 from .ssh import disconnect
 from .utils import pick
+
 from . import __version__ as version
 
 
