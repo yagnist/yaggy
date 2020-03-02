@@ -7,6 +7,7 @@ import datetime
 import click
 
 from .context import setup_context
+from .parser import run_parser
 from .ssh import disconnect
 from .utils import pick
 
@@ -34,9 +35,11 @@ def runner(filename, **kwargs):
 
     dry_run = not kwargs['run']
 
-    ctx, scenario = setup_context(filename, **kwargs)
+    ctx = setup_context(filename, **kwargs)
 
     logger = pick(ctx, 'logger.local')
+
+    scenario = run_parser(filename, logger)
 
     try:
 

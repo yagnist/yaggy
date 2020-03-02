@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 
 from .commands import command_parts
 from .exceptions import YaggySyntaxError
@@ -112,3 +113,16 @@ def parse(filename, tags=None, refs=None, vstate=None, rootdir=None):
         if to_include is not None:
             yield from parse(to_include, tags=tags, refs=refs,
                              vstate=vstate, rootdir=rootdir)
+
+
+def run_parser(filename, logger):
+    try:
+        scenario = list(parse(filename))
+    except YaggySyntaxError as e:
+        logger.error('%s', str(e))
+        sys.exit(1)
+    except FileNotFoundError as e:
+        logger.error('File not found: "%s"', str(e))
+        sys.exit(1)
+
+    return scenario

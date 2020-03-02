@@ -7,9 +7,7 @@ import pwd
 
 from . import ssh, __version__ as version
 
-from .exceptions import YaggyError
 from .logging import setup_logging, get_logger
-from .parser import parse
 
 
 def get_local_username():
@@ -50,15 +48,6 @@ def setup_context(filename, **kwargs):
     logger_local = get_logger('yaggy.local', localname.rjust(w))
     logger_remote = get_logger('yaggy.remote', hostname.rjust(w))
 
-    try:
-        scenario = list(parse(filename))
-    except YaggyError as e:
-        logger_local.error('%s', str(e))
-        sys.exit(1)
-    except FileNotFoundError as e:
-        logger_local.error('File not found: "%s"', str(e))
-        sys.exit(1)
-
     # ssh
     runtimedir = mkdir(0o700, basedir, '.yaggy')
 
@@ -91,4 +80,4 @@ def setup_context(filename, **kwargs):
         'results': {},
     }
 
-    return ctx, scenario
+    return ctx
