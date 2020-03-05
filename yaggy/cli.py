@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import os
 import sys
-
-import click
+import argparse
 
 from .context import setup_context, gather_tags
 from .parser import run_parser
@@ -10,28 +10,80 @@ from .ssh import disconnect
 from .utils import pick, mutate
 
 
-@click.command(help='Run yaggy scenario from specified file.')
-@click.argument('filename', type=click.Path(exists=True, resolve_path=True))
-@click.option(
-    '-u', '--username', envvar='YAGGY_USERNAME',
-    help='Username to connect to the server.')
-@click.option(
-    '-h', '--hostname', envvar='YAGGY_HOSTNAME', required=True,
-    help='Server hostname to connect to.')
-@click.option(
-    '-p', '--port', envvar='YAGGY_PORT',
-    type=int, help='Server port to connect to.')
-@click.option(
-    '-t', '--tag', multiple=True,
-    help='Run actions for specified tag (can be specified multiple times).')
-@click.option(
-    '-v', '--verbose', is_flag=True, help='Be verbose.')
-@click.option(
-    '--run', is_flag=True,
-    help='Must be set to actually run the scenario.')
-def runner(filename, **kwargs):
+def parse_args(args):
+    parser = argparse.ArgumentParser(
+        description=('yg (aka yaggy) - simple tool to administer '
+                     'remote servers using ssh'),
+        add_help=False)
+    parser.add_argument(
+        '--help', action='help', default=argparse.SUPPRESS,
+        help='show this help message and exit')
+    commands = parser.add_subparsers(
+        title='commands', dest='command', required=True)
 
-    dry_run = not kwargs['run']
+    # tags command
+    tags_cmd = commands.add_parser(
+        'tags',
+        help='show tags tree built from yaggy scenario',
+        description='Show tags tree built from yaggy scenario.',
+        add_help=False)
+
+    tags_cmd.add_argument(dest='filename',
+                          help='yaggy scenario')
+
+    tags_cmd.add_argument(
+        '--help', action='help', default=argparse.SUPPRESS,
+        help='show this help message and exit')
+
+    # run command
+    run_cmd = commands.add_parser(
+        'run', help='run yaggy scenario', add_help=False)
+
+    run_cmd.add_argument(dest='filename',
+                         help='yaggy scenario')
+
+    run_cmd.add_argument(
+        '-h',
+        '--host',
+        required=True,
+        help='remote host to connect to (required)')
+    run_cmd.add_argument(
+        '-p', '--port', type=int, help='remote port to connect to')
+    run_cmd.add_argument(
+        '-u', '--user', help='remote user to connect as')
+    run_cmd.add_argument(
+        '-t',
+        '--tags',
+        help='comma-separated list of tags to run actions for')
+    run_cmd.add_argument(
+        '--dry-run', action='store_true', help='dry-run mode')
+    run_cmd.add_argument(
+        '-v', '--verbose', action='store_true', help='be verbose')
+    run_cmd.add_argument(
+        '--help', action='help', default=argparse.SUPPRESS,
+        help='show this help message and exit')
+
+    return parser.parse_args(args)
+
+
+def cli():
+    args = parse_args(sys.argv[1:])
+    args = dict(vars(args))
+
+    command = args.pop('command')
+    filename = args.pop('filename')
+    filename = os.path.abspath(os.path.expanduser(filename))
+
+    if command == 'run':
+        run(filename, **args)
+    elif command == 'tags':
+        # TODO
+        pass
+
+
+def run(filename, **kwargs):
+
+    dry_run = kwargs.get('dry_run')
 
     ctx = setup_context(filename, **kwargs)
 

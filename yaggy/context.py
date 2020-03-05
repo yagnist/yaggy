@@ -28,8 +28,8 @@ def setup_context(filename, **kwargs):
     dt = datetime.datetime.now()
 
     verbose = kwargs['verbose']
-    hostname = kwargs['hostname']
-    dry_run = not kwargs['run']
+    host = kwargs['host']
+    dry_run = kwargs['dry_run']
 
     basedir = os.path.dirname(filename)
     basename = os.path.basename(filename)
@@ -38,16 +38,16 @@ def setup_context(filename, **kwargs):
     # logging
     logdir = mkdir(0o700, basedir, 'logs')
     logfilename = '{}.{}.{}.log'.format(
-        prefix, hostname, dt.strftime('%Y%m%d%H%M%S'))
+        prefix, host, dt.strftime('%Y%m%d%H%M%S'))
     logfile = os.path.join(logdir, logfilename)
 
     setup_logging(logfile, verbose)
 
     localname = 'localhost'
-    w = max((len(hostname), len(localname)))
+    w = max((len(host), len(localname)))
 
     logger_local = get_logger('yaggy.local', localname.rjust(w))
-    logger_remote = get_logger('yaggy.remote', hostname.rjust(w))
+    logger_remote = get_logger('yaggy.remote', host.rjust(w))
 
     # ssh
     runtimedir = mkdir(0o700, basedir, '.yaggy')
@@ -72,7 +72,7 @@ def setup_context(filename, **kwargs):
             'remote': logger_remote,
         },
         'local': {
-            'username': get_local_username(),
+            'user': get_local_username(),
         },
         'started_at': dt,
         'vars': {},

@@ -13,8 +13,8 @@ def setup_ssh(runtimedir, **kwargs):
 
     logger = kwargs['logger']
 
-    hostname = kwargs['hostname']
-    username = kwargs.get('username')
+    host = kwargs['host']
+    user = kwargs.get('user')
     port = kwargs.get('port')
 
     cpname = f'{uuid.uuid4()}.cp'
@@ -32,12 +32,12 @@ def setup_ssh(runtimedir, **kwargs):
                 f'-o ControlPath="{cp}" '
                 f'-o PreferredAuthentications=publickey')
     opts_port = f'-p {port}' if port else ''
-    opts_username = f'-l {username}' if username else ''
+    opts_user = f'-l {user}' if user else ''
 
     # NB. command with ControlMaster=yes
-    cmd_connect = f'ssh {opts_port} {opts_username} {opts_connect} {hostname}'
+    cmd_connect = f'ssh {opts_port} {opts_user} {opts_connect} {host}'
     # NB. command with ControlMaster=no
-    cmd_run = f'ssh {opts_port} {opts_username} {opts_run} {hostname}'
+    cmd_run = f'ssh {opts_port} {opts_user} {opts_run} {host}'
 
     return {
         'cmd_connect': cmd_connect,
