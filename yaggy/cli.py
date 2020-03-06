@@ -5,6 +5,7 @@ import sys
 import argparse
 
 from .context import setup_context, gather_tags
+from .logging import setup_logging, get_logger
 from .parser import run_parser
 from .ssh import disconnect
 from .utils import pick, mutate
@@ -77,8 +78,31 @@ def cli():
     if command == 'run':
         run(filename, **args)
     elif command == 'tags':
-        # TODO
-        pass
+        list_tags(filename, **args)
+
+
+def list_tags(filename, **kwargs):
+
+    setup_logging()
+    logger = get_logger('yaggy.local', 'localhost')
+
+    scenario = run_parser(filename, logger)
+    tags = gather_tags(scenario)
+
+    def format_node(node, level=0):
+        assert isinstance(node, dict)
+        prefix = '' if level == 0 else '    ' * level
+        nl = '' if level == 0 else '\n'
+        res = ''
+        keys = sorted(node.keys())
+        for k in keys:
+            nested = format_node(node[k], level=level + 1)
+            res = f'{res}{nl}{prefix}{k}{nested}'
+        return res
+
+    tree = format_node(tags['tree'])
+    logger.info('# tags tree')
+    logger.info(tree)
 
 
 def run(filename, **kwargs):

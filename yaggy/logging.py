@@ -113,7 +113,7 @@ class ColoredStreamHandler(logging.StreamHandler):
                 stream.write(self.terminator)
                 self.flush()
                 return
-            if hasattr(self.formatter, 'indent'):
+            if self.isatty() and hasattr(self.formatter, 'indent'):
                 width = len(self.formatter.indent)
                 lines = msg.splitlines(keepends=True)
                 head = lines[0]
@@ -146,6 +146,10 @@ class ColoredStreamHandler(logging.StreamHandler):
         except Exception:
             self.handleError(record)
 
+    def isatty(self):
+        s = self.stream
+        return hasattr(s, 'isatty') and callable(s.isatty) and s.isatty()
+
 
 class YaggyLoggerAdapter(logging.LoggerAdapter):
 
@@ -157,8 +161,23 @@ class YaggyLoggerAdapter(logging.LoggerAdapter):
         return msg, kwargs
 
 
-def logging_config(filename, verbose):
+def logging_config(filename=None, verbose=False):
     level = 'DEBUG' if verbose else 'INFO'
+    handlers = {
+        'console': {
+            'level': level,
+            'class': 'yaggy.logging.ColoredStreamHandler',
+            'formatter': 'indented',
+        },
+    }
+    if filename is not None:
+        handlers['file'] = {
+            'level': level,
+            'class': 'logging.FileHandler',
+            'formatter': 'indented',
+            'encoding': 'utf-8',
+            'filename': filename,
+        }
     return {
         'version': 1,
         'disable_existing_loggers': True,
@@ -169,32 +188,19 @@ def logging_config(filename, verbose):
                 'class': 'yaggy.logging.IndentedFormatter',
             },
         },
-        'handlers': {
-            'console': {
-                'level': level,
-                'class': 'yaggy.logging.ColoredStreamHandler',
-                'formatter': 'indented',
-            },
-            'file': {
-                'level': level,
-                'class': 'logging.FileHandler',
-                'formatter': 'indented',
-                'encoding': 'utf-8',
-                'filename': filename,
-            },
-        },
+        'handlers': handlers,
         'loggers': {
             'yaggy': {
                 'level': level,
-                'handlers': ['console', 'file'],
+                'handlers': list(handlers.keys()),
                 'propagate': False,
             },
         },
     }
 
 
-def setup_logging(logfile, verbose):
-    logconf = logging_config(logfile, verbose)
+def setup_logging(filename=None, verbose=False):
+    logconf = logging_config(filename=filename, verbose=verbose)
     logging.config.dictConfig(logconf)
 
 

@@ -41,7 +41,7 @@ def setup_context(filename, **kwargs):
         prefix, host, dt.strftime('%Y%m%d%H%M%S'))
     logfile = os.path.join(logdir, logfilename)
 
-    setup_logging(logfile, verbose)
+    setup_logging(filename=logfile, verbose=verbose)
 
     localname = 'localhost'
     w = max((len(host), len(localname)))
