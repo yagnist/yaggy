@@ -7,7 +7,8 @@ from .cmd_local import (CMD_LRUN, CMD_LRUN_EXCLAMATION,
                         CMD_LFAILED, CMD_LSUCCEED, CMD_FETCH)
 from .cmd_misc import CMD_INCLUDE, CMD_TAG, CMD_UNTAG, CMD_ECHO
 from .cmd_remote import (CMD_RUN, CMD_RUN_EXCLAMATION,
-                         CMD_FAILED, CMD_SUCCEED, CMD_SYNC, CMD_CHANGED)
+                         CMD_FAILED, CMD_SUCCEED)
+from .cmd_sync import CMD_SYNC
 from .cmd_vars import CMD_VARS, CMD_SECRETS
 
 
@@ -30,7 +31,6 @@ COMMANDS = {
     'LFAILED?': CMD_LFAILED,
     'LSUCCEED?': CMD_LSUCCEED,
     'SYNC': CMD_SYNC,
-    'CHANGED?': CMD_CHANGED,
     'FETCH': CMD_FETCH,
 }
 

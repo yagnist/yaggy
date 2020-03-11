@@ -50,17 +50,3 @@ CMD_SUCCEED = {
     'vstate': vstate.vstate_conditional_run,
     'is_internal': False,
 }
-CMD_SYNC = {
-    'validators': [
-        validators.no_backref,
-        validators.has_args,
-    ],
-    'is_internal': False,
-}
-CMD_CHANGED = {
-    'validators': [
-        validators.no_ref,
-        validators.has_args,
-    ],
-    'is_internal': False,
-}

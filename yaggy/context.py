@@ -31,9 +31,14 @@ def setup_context(filename, **kwargs):
     host = kwargs['host']
     dry_run = kwargs['dry_run']
 
+    kwargs.setdefault('syncroot', '~/.yaggy/')
+
     basedir = os.path.dirname(filename)
     basename = os.path.basename(filename)
     prefix = os.path.splitext(basename)[0]
+
+    filesdir = os.path.join(basedir, 'files')
+    templatesdir = os.path.join(basedir, 'templates')
 
     # logging
     logdir = mkdir(0o700, basedir, 'logs')
@@ -64,7 +69,6 @@ def setup_context(filename, **kwargs):
 
     ctx = {
         'filename': filename,
-        'basedir': basedir,
         'cli': kwargs,
         'ssh': ssh_config,
         'logger': {
@@ -73,6 +77,9 @@ def setup_context(filename, **kwargs):
         },
         'local': {
             'user': get_local_username(),
+            'rootdir': basedir,
+            'filesdir': filesdir,
+            'templatesdir': templatesdir,
         },
         'started_at': dt,
         'vars': {},

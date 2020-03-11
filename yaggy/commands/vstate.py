@@ -61,3 +61,11 @@ def vstate_conditional_lrun(vstate, **kwargs):
                             f'appeared before, unable to run command')
 
     return is_valid, None
+
+
+def vstate_sync(vstate, **kwargs):
+    is_connected = vstate.get('is_connected', False)
+    if is_connected:
+        return is_valid, {'sync_called': True}
+
+    return is_invalid, 'SYNC not connected, unable to sync'

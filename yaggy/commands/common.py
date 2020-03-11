@@ -20,6 +20,26 @@ def succeed(ctx, backref):
     return res.returncode == 0
 
 
+def log_result(cmd, res, logger, raise_on_error=True):
+    if res.returncode == 0:
+        logger.info('-' * 70)
+        logger.info('$ %s', cmd)
+        stdout = res.stdout.strip()
+        if stdout:
+            logger.info('%s', stdout)
+    else:
+        logger.error('-' * 70)
+        logger.error('$ %s', cmd)
+        stderr = res.stderr.strip()
+        if stderr:
+            logger.error('%s', stderr)
+        logger.error('# return code: %s', res.returncode)
+
+        if raise_on_error:
+            msg = f'command {cmd} failed'
+            raise YaggyCommandError(msg)
+
+
 def run(**kwargs):
     cmd = kwargs.pop('cmd')
     execute = kwargs.pop('execute', None)
@@ -35,21 +55,7 @@ def run(**kwargs):
     res = subprocess.run(args, **kwargs)
 
     if noisy:
-        if res.returncode == 0:
-            logger.info('-' * 70)
-            # logger.info('$ %s\n%s', cmd, res.stdout.strip())
-            logger.info('$ %s', cmd)
-            logger.info('%s', res.stdout.strip())
-        else:
-            logger.error('-' * 70)
-            # logger.error('$ %s\n%s', cmd, res.stderr.strip())
-            logger.error('$ %s', cmd)
-            logger.error('%s', res.stderr.strip())
-            logger.error('# return code: %s', res.returncode)
-
-            if raise_on_error:
-                msg = f'command {cmd} failed'
-                raise YaggyCommandError(msg)
+        log_result(cmd, res, logger, raise_on_error=raise_on_error)
 
     return res
 

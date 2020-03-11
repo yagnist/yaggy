@@ -16,6 +16,7 @@ def setup_ssh(runtimedir, **kwargs):
     host = kwargs['host']
     user = kwargs.get('user')
     port = kwargs.get('port')
+    syncroot = kwargs.get('syncroot')
 
     cpname = f'{uuid.uuid4()}.cp'
     cp = os.path.join(runtimedir, cpname)
@@ -39,13 +40,23 @@ def setup_ssh(runtimedir, **kwargs):
     # NB. command with ControlMaster=no
     cmd_run = f'ssh {opts_port} {opts_user} {opts_run} {host}'
 
+    opts_scp = (f'-p '
+                f'-r '
+                f'-o ControlMaster=no '
+                f'-o ControlPath="{cp}" '
+                f'-o PreferredAuthentications=publickey')
+    opts_scp_port = f'-P {port}' if port else ''
+    cmd_scp = f'scp {opts_scp_port} {opts_scp}'
+
     return {
         'cmd_connect': cmd_connect,
         'cmd_run': cmd_run,
+        'cmd_scp': cmd_scp,
         'control_socket': cp,
         'conn_timeout': conn_timeout,
         'tunnel': None,
         'is_connected': False,
+        'syncroot': syncroot,
     }
 
 
