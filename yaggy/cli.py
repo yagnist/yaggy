@@ -11,6 +11,10 @@ from .ssh import disconnect
 from .utils import pick, mutate
 
 
+def tags_type(value):
+    return [x.strip() for x in value.split(',') if x.strip()]
+
+
 def parse_args(args):
     parser = argparse.ArgumentParser(
         description=('yg (aka yaggy) - simple tool to administer '
@@ -55,6 +59,8 @@ def parse_args(args):
     run_cmd.add_argument(
         '-t',
         '--tags',
+        type=tags_type,
+        action='extend',
         help='comma-separated list of tags to run actions for')
     run_cmd.add_argument(
         '--dry-run', action='store_true', help='dry-run mode')
@@ -76,6 +82,9 @@ def cli():
     filename = os.path.abspath(os.path.expanduser(filename))
 
     if command == 'run':
+        tags = args['tags']
+        tags = set() if tags is None else set(tags)
+        args['tags_set'] = tags
         run(filename, **args)
     elif command == 'tags':
         list_tags(filename, **args)
@@ -108,6 +117,7 @@ def list_tags(filename, **kwargs):
 def run(filename, **kwargs):
 
     dry_run = kwargs.get('dry_run')
+    cli_tags = kwargs.get('tags_set')
 
     ctx = setup_context(filename, **kwargs)
 
@@ -118,6 +128,10 @@ def run(filename, **kwargs):
     tags = gather_tags(scenario)
     mutate(ctx, 'tags', tags)
 
+    if cli_tags:
+        cli_tags_repr = ','.join(kwargs.get('tags'))
+        logger.info('# selected tags to run commands for: "%s"', cli_tags_repr)
+
     try:
 
         safe_commands = ('ECHO', 'CONNECT', 'DISCONNECT', 'INCLUDE', 'VARS',
@@ -125,11 +139,19 @@ def run(filename, **kwargs):
 
         for cmd, parsed in scenario:
             logger.debug('')
+
+            caller = pick(cmd, 'call')
+            cmdname = pick(parsed, 'cmdname')
+            cmd_tags = set(pick(parsed, 'tags'))
+
+            if cli_tags and cmd_tags and cli_tags.isdisjoint(cmd_tags):
+                logger.debug(
+                    '# "%(line)s" command skipped (not in selected tags)',
+                    parsed)
+                continue
+
             if not pick(cmd, 'is_internal'):
                 logger.debug('# %(line)s', parsed)
-
-            cmdname = pick(parsed, 'cmdname')
-            caller = pick(cmd, 'call')
 
             if callable(caller):
                 if dry_run and cmdname not in safe_commands:
