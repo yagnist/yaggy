@@ -124,4 +124,4 @@ def validate_untag(**kwargs):
         msg = f'TAG/UNTAG pair "{tags[-1]}/{tag}" differs, unable to untag'
         return is_invalid, msg
 
-    return is_valid, {'tags': tags[:-1]}
+    return is_valid, {'tags_delayed': tags[:-1]}

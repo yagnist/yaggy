@@ -102,13 +102,20 @@ def parse(filename, tags=None, refs=None, vstate=None, rootdir=None):
 
         if cmdname == 'INCLUDE':
             to_include = parsed['to_include']
-        elif cmdname in ('TAG', 'UNTAG'):
+        elif cmdname == 'TAG':
             tags = parsed['tags']
+
+        # NB. UNTAG must have current tag in tags, so it will be removed
+        # for next command
+        tags_delayed = parsed.pop('tags_delayed', None)
 
         if ref is not None:
             refs.add(ref)
 
         yield cmd, parsed
+
+        if isinstance(tags_delayed, tuple):
+            tags = tags_delayed
 
         if to_include is not None:
             yield from parse(to_include, tags=tags, refs=refs,
