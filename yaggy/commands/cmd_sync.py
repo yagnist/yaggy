@@ -74,9 +74,11 @@ def call_sync(ctx, **parsed):
             templates = glob.glob(os.path.join(templatesdir, '**', '*.j2'),
                                   recursive=True)
 
-        jinja_env = setup_env(templatesdir)
+        jinja_env = setup_env(ctx)
         # TODO
-        context = {}
+        context = {
+            'yaggy_managed': 'DO NOT EDIT! This file is managed by yaggy.',
+        }
 
         dirnames = set()
         for template in templates:
@@ -95,7 +97,8 @@ def call_sync(ctx, **parsed):
                 dirnames.add(dirname)
 
             tmpl = jinja_env.get_template(filename)
-            content = tmpl.render(**context)
+            content = tmpl.render(filename=os.path.basename(filename),
+                                  **context)
 
             target = os.path.join(syncroot, dst)
             cmd = f'cat >{target}'
