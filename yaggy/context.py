@@ -23,15 +23,15 @@ def mkdir(mode, *args):
     return path
 
 
-def setup_context(filename, **kwargs):
+def setup_context(filename, **cli_kwargs):
 
     dt = datetime.datetime.now()
 
-    verbose = kwargs['verbose']
-    host = kwargs['host']
-    dry_run = kwargs['dry_run']
+    verbose = cli_kwargs['verbose']
+    host = cli_kwargs['host']
+    dry_run = cli_kwargs['dry_run']
 
-    kwargs.setdefault('syncroot', '~/.yaggy/')
+    cli_kwargs.setdefault('syncroot', '~/.yaggy/')
 
     basedir = os.path.dirname(filename)
     basename = os.path.basename(filename)
@@ -57,7 +57,7 @@ def setup_context(filename, **kwargs):
     # ssh
     runtimedir = mkdir(0o700, basedir, '.yaggy')
 
-    ssh_config = ssh.setup_ssh(runtimedir, logger=logger_local, **kwargs)
+    ssh_config = ssh.setup_ssh(runtimedir, logger=logger_local, **cli_kwargs)
 
     logger_local.info('# Yaggy version:%s localtime:%s',
                       version,
@@ -69,7 +69,7 @@ def setup_context(filename, **kwargs):
 
     ctx = {
         'filename': filename,
-        'cli': kwargs,
+        'cli': cli_kwargs,
         'ssh': ssh_config,
         'logger': {
             'local': logger_local,

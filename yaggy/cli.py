@@ -75,22 +75,22 @@ def parse_args(args):
 
 def cli():
     args = parse_args(sys.argv[1:])
-    args = dict(vars(args))
+    kwargs = dict(vars(args))
 
-    command = args.pop('command')
-    filename = args.pop('filename')
+    command = kwargs.pop('command')
+    filename = kwargs.pop('filename')
     filename = os.path.abspath(os.path.expanduser(filename))
 
     if command == 'run':
-        tags = args['tags']
+        tags = kwargs['tags']
         tags = set() if tags is None else set(tags)
-        args['tags_set'] = tags
-        run(filename, **args)
+        kwargs['tags_set'] = tags
+        run(filename, **kwargs)
     elif command == 'tags':
-        list_tags(filename, **args)
+        list_tags(filename, **kwargs)
 
 
-def list_tags(filename, **kwargs):
+def list_tags(filename, **cli_kwargs):
 
     setup_logging()
     logger = get_logger('yaggy.local', 'localhost')
@@ -114,12 +114,12 @@ def list_tags(filename, **kwargs):
     logger.info(tree)
 
 
-def run(filename, **kwargs):
+def run(filename, **cli_kwargs):
 
-    dry_run = kwargs.get('dry_run')
-    cli_tags = kwargs.get('tags_set')
+    dry_run = cli_kwargs.get('dry_run')
+    cli_tags = cli_kwargs.get('tags_set')
 
-    ctx = setup_context(filename, **kwargs)
+    ctx = setup_context(filename, **cli_kwargs)
 
     logger = pick(ctx, 'logger.local')
 
@@ -129,7 +129,7 @@ def run(filename, **kwargs):
     mutate(ctx, 'tags', tags)
 
     if cli_tags:
-        cli_tags_repr = ','.join(kwargs.get('tags'))
+        cli_tags_repr = ','.join(cli_kwargs.get('tags'))
         logger.info('# selected tags to run commands for: "%s"', cli_tags_repr)
 
     try:
