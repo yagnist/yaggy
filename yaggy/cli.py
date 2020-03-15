@@ -5,10 +5,11 @@ import sys
 import argparse
 
 from .context import setup_context, gather_tags
+from .exceptions import YaggyError
 from .logging import setup_logging, get_logger
 from .parser import run_parser
 from .ssh import disconnect
-from .utils import pick, mutate
+from .utils import pick, mutate, render_vars
 
 
 def tags_type(value):
@@ -157,7 +158,14 @@ def run(filename, **cli_kwargs):
                 if dry_run and cmdname not in safe_commands:
                     continue
                 try:
+                    cmd_args = parsed['args']
+                    if cmd_args:
+                        parsed['args'] = render_vars(ctx, cmd_args)
+
                     caller(ctx, **parsed)
+                except YaggyError as e:
+                    logger.error('%s', str(e))
+                    sys.exit(1)
                 except Exception as e:
                     logger.error('"%(cmdname)s" command failed', parsed)
 
