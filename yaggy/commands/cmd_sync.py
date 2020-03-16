@@ -25,6 +25,10 @@ def call_sync(ctx, **parsed):
     user = pick(ctx, 'cli.user')
     cli_tags = pick(ctx, 'cli.tags_set')
 
+    logger_local.info(
+        '# syncing files and templates%s',
+        ' for tag(s) "%s"' % ','.join(cli_tags) if cli_tags else '')
+
     templatesdir = pick(ctx, 'local.templatesdir')
     filesdir = pick(ctx, 'local.filesdir')
     rootdir = pick(ctx, 'local.rootdir')
@@ -75,9 +79,11 @@ def call_sync(ctx, **parsed):
                                   recursive=True)
 
         jinja_env = setup_env(ctx)
-        # TODO
         context = {
             'yaggy_managed': 'DO NOT EDIT! This file is managed by yaggy.',
+            'syncroot': syncroot,
+            'hostname': host,
+            'username': user,
         }
 
         dirnames = set()

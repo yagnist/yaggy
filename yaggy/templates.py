@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 
+from functools import partial
+
 import jinja2
 
 from .utils import pick
+
+
+def get_var(ctx, prefix, name):
+    return pick(ctx, f'{prefix}.{name}')
 
 
 def setup_env(ctx):
@@ -18,13 +24,8 @@ def setup_env(ctx):
     ]
     env = jinja2.Environment(loader=loader, extensions=extensions)
 
-    def yaggy_var(name):
-        return pick(ctx, f'vars.{name}')
-
-    def yaggy_secret(name):
-        return pick(ctx, f'secrets.{name}')
-
-    env.globals['var'] = yaggy_var
-    env.globals['secret'] = yaggy_secret
+    env.globals['var'] = partial(get_var, ctx, 'vars')
+    env.globals['secret'] = partial(get_var, ctx, 'secrets')
+    env.globals['result'] = partial(get_var, ctx, 'results')
 
     return env

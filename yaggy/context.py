@@ -84,7 +84,6 @@ def setup_context(filename, **cli_kwargs):
         'started_at': dt,
         'vars': {},
         'secrets': {},
-        # 'env': setup_templates(),
         'results': {},
     }
 
