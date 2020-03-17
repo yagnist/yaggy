@@ -69,3 +69,11 @@ def vstate_sync(vstate, **kwargs):
         return is_valid, {'sync_called': True}
 
     return is_invalid, 'SYNC not connected, unable to sync'
+
+
+def vstate_fetch(vstate, **kwargs):
+    is_connected = vstate.get('is_connected', False)
+    if is_connected:
+        return is_valid, {'fetch_called': True}
+
+    return is_invalid, 'FETCH not connected, unable to fetch'

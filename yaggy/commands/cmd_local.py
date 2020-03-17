@@ -51,11 +51,3 @@ CMD_LSUCCEED = {
     'vstate': vstate.vstate_conditional_lrun,
     'is_internal': False,
 }
-CMD_FETCH = {
-    'validators': [
-        validators.no_ref,
-        validators.no_backref,
-        validators.has_args,
-    ],
-    'is_internal': False,
-}

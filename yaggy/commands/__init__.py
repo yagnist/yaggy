@@ -3,8 +3,9 @@
 import re
 
 from .cmd_connect import CMD_CONNECT, CMD_DISCONNECT, CMD_RECONNECT
+from .cmd_fetch import CMD_FETCH
 from .cmd_local import (CMD_LRUN, CMD_LRUN_EXCLAMATION,
-                        CMD_LFAILED, CMD_LSUCCEED, CMD_FETCH)
+                        CMD_LFAILED, CMD_LSUCCEED)
 from .cmd_misc import CMD_INCLUDE, CMD_TAG, CMD_UNTAG, CMD_ECHO
 from .cmd_remote import (CMD_RUN, CMD_RUN_EXCLAMATION,
                          CMD_FAILED, CMD_SUCCEED)
