@@ -64,6 +64,11 @@ def parse_args(args):
         action='extend',
         help='comma-separated list of tags to run actions for')
     run_cmd.add_argument(
+        '--syncroot', default='~/.yaggy',
+        help=('remote server directory to copy files and render templates to '
+              '(defaults to "~/.yaggy")')
+    )
+    run_cmd.add_argument(
         '--dry-run', action='store_true', help='dry-run mode')
     run_cmd.add_argument(
         '-v', '--verbose', action='store_true', help='be verbose')

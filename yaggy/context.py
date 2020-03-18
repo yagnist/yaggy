@@ -31,8 +31,6 @@ def setup_context(filename, **cli_kwargs):
     host = cli_kwargs['host']
     dry_run = cli_kwargs['dry_run']
 
-    cli_kwargs.setdefault('syncroot', '~/.yaggy/')
-
     basedir = os.path.dirname(filename)
     basename = os.path.basename(filename)
     prefix = os.path.splitext(basename)[0]
