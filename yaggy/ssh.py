@@ -16,7 +16,6 @@ def setup_ssh(runtimedir, **kwargs):
     host = kwargs['host']
     user = kwargs.get('user')
     port = kwargs.get('port')
-    syncroot = kwargs.get('syncroot')
 
     cpname = f'{uuid.uuid4()}.cp'
     cp = os.path.join(runtimedir, cpname)
@@ -56,7 +55,6 @@ def setup_ssh(runtimedir, **kwargs):
         'conn_timeout': conn_timeout,
         'tunnel': None,
         'is_connected': False,
-        'syncroot': syncroot,
     }
 
 
@@ -74,9 +72,9 @@ def connect(ctx):
                        conn_timeout)
 
     tunnel = subprocess.Popen(shlex.split(ssh_cmd),
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
-                               encoding='utf-8')
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE,
+                              encoding='utf-8')
     try:
         proc_stdout, proc_stderr = tunnel.communicate(timeout=conn_timeout)
     except subprocess.TimeoutExpired:

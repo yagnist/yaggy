@@ -19,7 +19,7 @@ def call_sync(ctx, **parsed):
 
     cmd_run = pick(ctx, 'ssh.cmd_run')
     cmd_scp = pick(ctx, 'ssh.cmd_scp')
-    syncroot = pick(ctx, 'ssh.syncroot')
+    syncroot = pick(ctx, 'cli.syncroot')
 
     host = pick(ctx, 'cli.host')
     user = pick(ctx, 'cli.user')
