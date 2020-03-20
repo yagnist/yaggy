@@ -39,7 +39,7 @@ def setup_context(filename, **cli_kwargs):
     templatesdir = os.path.join(basedir, 'templates')
 
     # logging
-    logdir = mkdir(0o700, basedir, 'logs')
+    logdir = cli_kwargs['logdir'] = mkdir(0o700, basedir, cli_kwargs['logdir'])
     logfilename = '{}.{}.{}.log'.format(
         prefix, host, dt.strftime('%Y%m%d%H%M%S'))
     logfile = os.path.join(logdir, logfilename)
@@ -53,9 +53,9 @@ def setup_context(filename, **cli_kwargs):
     logger_remote = get_logger('yaggy.remote', host.rjust(w))
 
     # ssh
-    runtimedir = mkdir(0o700, basedir, '.yaggy')
+    cli_kwargs['runtimedir'] = mkdir(0o700, basedir, cli_kwargs['runtimedir'])
 
-    ssh_config = ssh.setup_ssh(runtimedir, logger=logger_local, **cli_kwargs)
+    ssh_config = ssh.setup_ssh(logger=logger_local, **cli_kwargs)
 
     logger_local.info('# Yaggy version:%s localtime:%s',
                       version,

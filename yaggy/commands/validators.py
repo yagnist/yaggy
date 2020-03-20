@@ -9,53 +9,53 @@ is_valid = True
 is_invalid = False
 
 
-def no_ref(**kwargs):
-    ref = kwargs['ref']
+def no_ref(**parsed):
+    ref = parsed['ref']
 
     if ref is not None:
-        cmdname = kwargs['cmdname']
+        cmdname = parsed['cmdname']
         msg = f'{cmdname} command does not expect {ref} in arguments'
         return is_valid, msg
 
     return is_valid, None
 
 
-def no_backref(**kwargs):
-    backref = kwargs['backref']
+def no_backref(**parsed):
+    backref = parsed['backref']
 
     if backref is not None:
-        cmdname = kwargs['cmdname']
+        cmdname = parsed['cmdname']
         msg = f'{cmdname} command does not expect {backref} in arguments'
         return is_invalid, msg
 
     return is_valid, None
 
 
-def no_args(**kwargs):
-    args = kwargs['args']
+def no_args(**parsed):
+    args = parsed['args']
 
     if args:
-        cmdname = kwargs['cmdname']
+        cmdname = parsed['cmdname']
         msg = f'{cmdname} command does not expect any arguments'
         return is_invalid, msg
 
     return is_valid, None
 
 
-def has_args(**kwargs):
-    args = kwargs['args']
+def has_args(**parsed):
+    args = parsed['args']
 
     if not args:
-        cmdname = kwargs['cmdname']
+        cmdname = parsed['cmdname']
         msg = f'{cmdname} command expects some arguments'
         return is_invalid, msg
 
     return is_valid, None
 
 
-def validate_vars(**kwargs):
-    basedir = kwargs['basedir']
-    args = kwargs['args']
+def validate_vars(**parsed):
+    basedir = parsed['basedir']
+    args = parsed['args']
 
     filename = os.path.join(basedir, args)
 
@@ -66,9 +66,9 @@ def validate_vars(**kwargs):
     return is_valid, {'to_load': filename}
 
 
-def validate_secrets(**kwargs):
-    basedir = kwargs['basedir']
-    args = kwargs['args']
+def validate_secrets(**parsed):
+    basedir = parsed['basedir']
+    args = parsed['args']
 
     parts = shlex.split(args)
 
@@ -89,9 +89,9 @@ def validate_secrets(**kwargs):
     return is_valid, {'to_exec': [executable] + parts[1:]}
 
 
-def validate_include(**kwargs):
-    basedir = kwargs['basedir']
-    args = kwargs['args']
+def validate_include(**parsed):
+    basedir = parsed['basedir']
+    args = parsed['args']
 
     filename = os.path.join(basedir, args)
 
@@ -102,9 +102,9 @@ def validate_include(**kwargs):
     return is_valid, {'to_include': filename}
 
 
-def validate_tag(**kwargs):
-    tags = kwargs['tags']
-    tag = kwargs['args']
+def validate_tag(**parsed):
+    tags = parsed['tags']
+    tag = parsed['args']
 
     if tag in tags:
         msg = f'TAG "{tag}" is already in use, please use another'
@@ -113,9 +113,9 @@ def validate_tag(**kwargs):
     return is_valid, {'tags': tags + (tag, )}
 
 
-def validate_untag(**kwargs):
-    tags = kwargs['tags']
-    tag = kwargs['args']
+def validate_untag(**parsed):
+    tags = parsed['tags']
+    tag = parsed['args']
 
     if not tags or tag not in tags:
         msg = f'TAG "{tag}" is unknown, unable to untag'
@@ -125,3 +125,16 @@ def validate_untag(**kwargs):
         return is_invalid, msg
 
     return is_valid, {'tags_delayed': tags[:-1]}
+
+
+def validate_reconnect(**parsed):
+    timeout = parsed['args']
+
+    if not timeout:
+        # NB. default timeout to reconnect as string
+        return is_valid, {'args': '30'}
+    if not timeout.isdigit():
+        msg = (f'RECONNECT argument must be positive integer, '
+               f'got "{timeout}" instead')
+        return is_invalid, msg
+    return is_valid, {'args': timeout}

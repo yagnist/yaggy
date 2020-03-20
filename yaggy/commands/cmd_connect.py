@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from yaggy.ssh import connect, disconnect
+from yaggy.ssh import connect, disconnect, reconnect
 from yaggy.utils import pick
 
 from .common import run
@@ -8,7 +8,7 @@ from .common import run
 from . import validators, vstate
 
 
-def call_connect(ctx, **kwargs):
+def call_connect(ctx, **parsed):
 
     connect(ctx)
 
@@ -29,9 +29,14 @@ def call_connect(ctx, **kwargs):
             timeout=conn_timeout)
 
 
-def call_disconnect(ctx, **kwargs):
+def call_disconnect(ctx, **parsed):
 
     disconnect(ctx)
+
+
+def call_reconnect(ctx, **parsed):
+
+    reconnect(ctx, **parsed)
 
 
 CMD_CONNECT = {
@@ -55,6 +60,12 @@ CMD_DISCONNECT = {
     'is_internal': False,
 }
 CMD_RECONNECT = {
-    'validators': [],
+    'validators': [
+        validators.no_ref,
+        validators.no_backref,
+        validators.validate_reconnect,
+    ],
+    'call': call_reconnect,
+    'vstate': vstate.vstate_reconnect,
     'is_internal': False,
 }

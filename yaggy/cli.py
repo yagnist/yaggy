@@ -69,6 +69,12 @@ def parse_args(args):
               '(defaults to "~/.yaggy")')
     )
     run_cmd.add_argument(
+        '--runtimedir', default='.rt',
+        help='local runtime directory to store ssh control path socket file')
+    run_cmd.add_argument(
+        '--logdir', default='logs',
+        help='local logs directory to store yaggy logs')
+    run_cmd.add_argument(
         '--dry-run', action='store_true', help='dry-run mode')
     run_cmd.add_argument(
         '-v', '--verbose', action='store_true', help='be verbose')
