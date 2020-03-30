@@ -34,5 +34,4 @@ CMD_FETCH = {
     ],
     'call': call_fetch,
     'vstate': vstate.vstate_fetch,
-    'is_internal': False,
 }

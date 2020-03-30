@@ -47,7 +47,6 @@ CMD_CONNECT = {
     ],
     'call': call_connect,
     'vstate': vstate.vstate_connect,
-    'is_internal': False,
 }
 CMD_DISCONNECT = {
     'validators': [
@@ -57,7 +56,6 @@ CMD_DISCONNECT = {
     ],
     'call': call_disconnect,
     'vstate': vstate.vstate_disconnect,
-    'is_internal': False,
 }
 CMD_RECONNECT = {
     'validators': [
@@ -67,5 +65,4 @@ CMD_RECONNECT = {
     ],
     'call': call_reconnect,
     'vstate': vstate.vstate_reconnect,
-    'is_internal': False,
 }

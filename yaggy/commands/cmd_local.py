@@ -22,7 +22,6 @@ CMD_LRUN = {
     ],
     'call': call_lrun,
     'vstate': vstate.vstate_lrun,
-    'is_internal': False,
 }
 CMD_LRUN_EXCLAMATION = {
     'validators': [
@@ -31,7 +30,6 @@ CMD_LRUN_EXCLAMATION = {
     ],
     'call': call_lrun_exclamation,
     'vstate': vstate.vstate_lrun,
-    'is_internal': False,
 }
 CMD_LFAILED = {
     'validators': [
@@ -40,7 +38,6 @@ CMD_LFAILED = {
     ],
     'call': call_lfailed,
     'vstate': vstate.vstate_conditional_lrun,
-    'is_internal': False,
 }
 CMD_LSUCCEED = {
     'validators': [
@@ -49,5 +46,4 @@ CMD_LSUCCEED = {
     ],
     'call': call_lsucceed,
     'vstate': vstate.vstate_conditional_lrun,
-    'is_internal': False,
 }

@@ -27,7 +27,6 @@ def setup_context(filename, **cli_kwargs):
 
     dt = datetime.datetime.now()
 
-    verbose = cli_kwargs['verbose']
     host = cli_kwargs['host']
     dry_run = cli_kwargs['dry_run']
 
@@ -44,7 +43,7 @@ def setup_context(filename, **cli_kwargs):
         prefix, host, dt.strftime('%Y%m%d%H%M%S'))
     logfile = os.path.join(logdir, logfilename)
 
-    setup_logging(filename=logfile, verbose=verbose)
+    setup_logging(filename=logfile)
 
     localname = 'localhost'
     w = max((len(host), len(localname)))
@@ -60,7 +59,10 @@ def setup_context(filename, **cli_kwargs):
     logger_local.info('# Yaggy version:%s localtime:%s',
                       version,
                       dt.strftime('"%Y-%m-%d %H:%M:%S"'))
-    logger_local.info('# logfile path: "logs/%s"', logfilename)
+    logger_local.info('# logfile path:\n'
+                      '# logs/%s', logfilename)
+    logger_local.info('# command line arguments:\n'
+                      '# %s', ' '.join(sys.argv))
     if dry_run:
         logger_local.warning(
             '# DRY RUN mode, will try to connect to server only')

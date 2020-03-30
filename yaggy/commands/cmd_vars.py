@@ -58,7 +58,6 @@ CMD_VARS = {
         validators.validate_vars,
     ],
     'call': call_vars,
-    'is_internal': True,
 }
 CMD_SECRETS = {
     'validators': [
@@ -68,5 +67,4 @@ CMD_SECRETS = {
         validators.validate_secrets,
     ],
     'call': call_secrets,
-    'is_internal': True,
 }

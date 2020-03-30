@@ -161,8 +161,8 @@ class YaggyLoggerAdapter(logging.LoggerAdapter):
         return msg, kwargs
 
 
-def logging_config(filename=None, verbose=False):
-    level = 'DEBUG' if verbose else 'INFO'
+def logging_config(filename=None):
+    level = 'DEBUG'
     handlers = {
         'console': {
             'level': level,
@@ -199,8 +199,8 @@ def logging_config(filename=None, verbose=False):
     }
 
 
-def setup_logging(filename=None, verbose=False):
-    logconf = logging_config(filename=filename, verbose=verbose)
+def setup_logging(filename=None):
+    logconf = logging_config(filename=filename)
     logging.config.dictConfig(logconf)
 
 

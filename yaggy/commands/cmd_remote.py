@@ -21,7 +21,6 @@ CMD_RUN = {
     ],
     'call': call_run,
     'vstate': vstate.vstate_run,
-    'is_internal': False,
 }
 CMD_RUN_EXCLAMATION = {
     'validators': [
@@ -30,7 +29,6 @@ CMD_RUN_EXCLAMATION = {
     ],
     'call': call_run_exclamation,
     'vstate': vstate.vstate_run,
-    'is_internal': False,
 }
 CMD_FAILED = {
     'validators': [
@@ -39,7 +37,6 @@ CMD_FAILED = {
     ],
     'call': call_failed,
     'vstate': vstate.vstate_conditional_run,
-    'is_internal': False,
 }
 CMD_SUCCEED = {
     'validators': [
@@ -48,5 +45,4 @@ CMD_SUCCEED = {
     ],
     'call': call_succeed,
     'vstate': vstate.vstate_conditional_run,
-    'is_internal': False,
 }

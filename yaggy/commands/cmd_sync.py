@@ -124,5 +124,4 @@ CMD_SYNC = {
     ],
     'call': call_sync,
     'vstate': vstate.vstate_sync,
-    'is_internal': False,
 }

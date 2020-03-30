@@ -70,10 +70,10 @@ def connect(ctx, suppress_logs=False):
     logger_remote = pick(ctx, 'logger.remote')
 
     if not suppress_logs:
-        logger_local.debug(
+        logger_local.info(
             '# ssh control socket name: "%s"',
             os.path.basename(control_socket))
-        logger_local.debug(
+        logger_local.info(
             '# attempting to connect with connect timeout %s ...',
             conn_timeout)
 
@@ -155,7 +155,7 @@ def reconnect(ctx, **parsed):
 
         is_connected = pick(ctx, 'ssh.is_connected')
         if is_connected:
-            logger_local.debug(
+            logger_local.info(
                 '# ssh control socket name: "%s"',
                 os.path.basename(control_socket))
             logger_local.info('# [TUNNEL] state: reconnected')

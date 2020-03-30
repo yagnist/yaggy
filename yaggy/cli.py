@@ -77,8 +77,6 @@ def parse_args(args):
     run_cmd.add_argument(
         '--dry-run', action='store_true', help='dry-run mode')
     run_cmd.add_argument(
-        '-v', '--verbose', action='store_true', help='be verbose')
-    run_cmd.add_argument(
         '--help', action='help', default=argparse.SUPPRESS,
         help='show this help message and exit')
 
@@ -146,28 +144,28 @@ def run(filename, **cli_kwargs):
 
     try:
 
-        safe_commands = ('ECHO', 'CONNECT', 'DISCONNECT', 'INCLUDE', 'VARS',
+        safe_commands = ('CONNECT', 'DISCONNECT', 'INCLUDE', 'VARS',
                          'SECRETS', 'TAG', 'UNTAG')
 
         for cmd, parsed in scenario:
-            logger.debug('')
 
             caller = pick(cmd, 'call')
             cmdname = pick(parsed, 'cmdname')
             cmd_tags = set(pick(parsed, 'tags'))
 
             if cli_tags and cmd_tags and cli_tags.isdisjoint(cmd_tags):
-                logger.debug(
-                    '# "%(line)s" command skipped (not in selected tags)',
-                    parsed)
                 continue
 
-            if not pick(cmd, 'is_internal'):
-                logger.debug('# %(line)s', parsed)
+            if cmdname == 'ECHO' and not dry_run:
+                logger.info('')
+                logger.info('***** %(args)s *****', parsed)
+            else:
+                logger.info('# %(line)s', parsed)
+
+            if dry_run and cmdname not in safe_commands:
+                continue
 
             if callable(caller):
-                if dry_run and cmdname not in safe_commands:
-                    continue
                 try:
                     cmd_args = parsed['args']
                     if cmd_args:

@@ -74,10 +74,7 @@ def execute_cmd(ctx, raise_on_error=True, remote=False, predicate=None,
         cond = predicate(ctx, backref)
 
         if not cond:
-            logger.debug('# run condition is false, skipping "%s"', cmd)
             return
-        else:
-            logger.debug('# run condition is true, going to run "%s"', cmd)
 
     if not remote:
         cmd = os.path.expandvars(os.path.expanduser(cmd))
