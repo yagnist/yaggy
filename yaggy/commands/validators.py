@@ -134,7 +134,8 @@ def validate_reconnect(**parsed):
         # NB. default timeout to reconnect as string
         return is_valid, {'args': '30'}
     if not timeout.isdigit():
-        msg = (f'RECONNECT argument must be positive integer, '
+        cmdname = parsed['cmdname']
+        msg = (f'{cmdname} timeout argument must be positive integer, '
                f'got "{timeout}" instead')
         return is_invalid, msg
     return is_valid, {'args': timeout}

@@ -3,7 +3,7 @@
 from yaggy.ssh import connect, disconnect, reconnect
 from yaggy.utils import pick
 
-from .common import run
+from .common import run, failed
 
 from . import validators, vstate
 
@@ -39,6 +39,14 @@ def call_reconnect(ctx, **parsed):
     reconnect(ctx, **parsed)
 
 
+def call_reconnect_conditional(ctx, **parsed):
+
+    backref = parsed.get('backref')
+
+    if failed(ctx, backref):
+        reconnect(ctx, **parsed)
+
+
 CMD_CONNECT = {
     'validators': [
         validators.no_ref,
@@ -64,5 +72,13 @@ CMD_RECONNECT = {
         validators.validate_reconnect,
     ],
     'call': call_reconnect,
+    'vstate': vstate.vstate_reconnect,
+}
+CMD_RECONNECT_CONDITIONAL = {
+    'validators': [
+        validators.no_ref,
+        validators.validate_reconnect,
+    ],
+    'call': call_reconnect_conditional,
     'vstate': vstate.vstate_reconnect,
 }

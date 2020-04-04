@@ -2,7 +2,8 @@
 
 import re
 
-from .cmd_connect import CMD_CONNECT, CMD_DISCONNECT, CMD_RECONNECT
+from .cmd_connect import (CMD_CONNECT, CMD_DISCONNECT,
+                          CMD_RECONNECT, CMD_RECONNECT_CONDITIONAL)
 from .cmd_fetch import CMD_FETCH
 from .cmd_local import (CMD_LRUN, CMD_LRUN_EXCLAMATION,
                         CMD_LFAILED, CMD_LSUCCEED)
@@ -18,6 +19,7 @@ COMMANDS = {
     'SECRETS': CMD_SECRETS,
     'CONNECT': CMD_CONNECT,
     'RECONNECT': CMD_RECONNECT,
+    'RECONNECT?': CMD_RECONNECT_CONDITIONAL,
     'DISCONNECT': CMD_DISCONNECT,
     'INCLUDE': CMD_INCLUDE,
     'TAG': CMD_TAG,
@@ -36,7 +38,9 @@ COMMANDS = {
 }
 
 
-# NB. RUN! must be specified before RUN in regexp, LRUN! before LRUN
+# NB. RUN! must be specified before RUN in regexp,
+#     LRUN! before LRUN,
+#     RECONNECT? before RECONNECT
 allowed_commands = sorted(COMMANDS.keys(), reverse=True)
 
 COMMAND_RE = re.compile(
