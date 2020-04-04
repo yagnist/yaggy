@@ -57,19 +57,6 @@ def validate_vars(**parsed):
     basedir = parsed['basedir']
     args = parsed['args']
 
-    filename = os.path.join(basedir, args)
-
-    if not os.path.isfile(filename):
-        msg = f'VARS "{filename}" file not found'
-        return is_invalid, msg
-
-    return is_valid, {'to_load': filename}
-
-
-def validate_secrets(**parsed):
-    basedir = parsed['basedir']
-    args = parsed['args']
-
     parts = shlex.split(args)
 
     executable = shutil.which(parts[0])
@@ -81,7 +68,8 @@ def validate_secrets(**parsed):
         filename = os.path.join(basedir, shlex.quote(args))
 
         if not os.path.isfile(filename):
-            msg = f'SECRETS "{filename}" file not found'
+            cmdname = parsed['cmdname']
+            msg = f'{cmdname} "{filename}" file not found'
             return is_invalid, msg
 
         return is_valid, {'to_load': filename}
