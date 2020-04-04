@@ -50,7 +50,10 @@ def pick(ctx, path):
             ctx = ctx[key]
         else:
             return
-    return ctx.get(parts[-1])
+    name = parts[-1]
+    if hasattr(ctx, name):
+        return getattr(ctx, name)
+    return ctx.get(name)
 
 
 def mutate(ctx, path, value):

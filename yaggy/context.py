@@ -8,6 +8,7 @@ import pwd
 from . import ssh, __version__ as version
 
 from .logging import setup_logging, get_logger
+from .templates import setup_env
 from .utils import pick
 
 

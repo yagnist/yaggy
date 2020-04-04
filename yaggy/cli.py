@@ -9,6 +9,7 @@ from .exceptions import YaggyError
 from .logging import setup_logging, get_logger
 from .parser import run_parser
 from .ssh import disconnect
+from .templates import render
 from .utils import pick, mutate, render_vars
 
 
@@ -169,7 +170,7 @@ def run(filename, **cli_kwargs):
                 try:
                     cmd_args = parsed['args']
                     if cmd_args:
-                        parsed['args'] = render_vars(ctx, cmd_args)
+                        parsed['args'] = render(ctx, string=cmd_args)
 
                     caller(ctx, **parsed)
                 except YaggyError as e:

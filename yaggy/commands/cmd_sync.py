@@ -5,7 +5,7 @@ import glob
 import shlex
 import subprocess
 
-from yaggy.templates import setup_env
+from yaggy.templates import render
 from yaggy.utils import pick
 
 from .common import log_result
@@ -78,14 +78,6 @@ def call_sync(ctx, **parsed):
             templates = glob.glob(os.path.join(templatesdir, '**', '*.j2'),
                                   recursive=True)
 
-        jinja_env = setup_env(ctx)
-        context = {
-            'yaggy_managed': 'DO NOT EDIT! This file is managed by yaggy.',
-            'syncroot': syncroot,
-            'hostname': host,
-            'username': user,
-        }
-
         dirnames = set()
         for template in templates:
             filename = os.path.relpath(template, start=templatesdir)
@@ -102,9 +94,7 @@ def call_sync(ctx, **parsed):
 
                 dirnames.add(dirname)
 
-            tmpl = jinja_env.get_template(filename)
-            content = tmpl.render(filename=os.path.basename(filename),
-                                  **context)
+            content = render(ctx, filename=filename)
 
             target = os.path.join(syncroot, dst)
             cmd = f'cat >{target}'
