@@ -52,6 +52,15 @@ def run(**kwargs):
     if execute is not None:
         args = shlex.split(execute) + args
 
+    def quoted_arg(arg):
+        if ' ' not in arg:
+            return arg
+        if arg.startswith('"') and arg.endswith('"'):
+            return arg
+        return f'"{arg}"'
+
+    args = [quoted_arg(x) for x in args]
+
     res = subprocess.run(args, **kwargs)
 
     if noisy:
