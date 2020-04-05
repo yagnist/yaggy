@@ -10,7 +10,7 @@ from .logging import setup_logging, get_logger
 from .parser import run_parser
 from .ssh import disconnect
 from .templates import render
-from .utils import pick, mutate, render_vars
+from .utils import pick, mutate
 
 
 def tags_type(value):
