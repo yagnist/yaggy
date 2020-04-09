@@ -40,6 +40,9 @@ def render(ctx, filename=None, string=None):
     user = pick(ctx, 'cli.user')
     syncroot = pick(ctx, 'cli.syncroot')
 
+    dt = pick(ctx, 'local.datetime')
+    dt_str = dt.strftime('%Y%m%d%H%M%S')
+
     yaggy_managed = 'DO NOT EDIT! This file is managed by yaggy.'
 
     if not env:
@@ -54,11 +57,15 @@ def render(ctx, filename=None, string=None):
                               yaggy_managed=yaggy_managed,
                               hostname=host,
                               username=user,
-                              syncroot=syncroot)
+                              syncroot=syncroot,
+                              now=dt,
+                              now_str=dt_str)
     elif string is not None:
         tmpl = env.from_string(string)
         content = tmpl.render(hostname=host,
                               username=user,
-                              syncroot=syncroot)
+                              syncroot=syncroot,
+                              now=dt,
+                              now_str=dt_str)
 
     return content
