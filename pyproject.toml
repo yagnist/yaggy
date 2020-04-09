@@ -3,6 +3,9 @@ name = "yaggy"
 version = "0.1.0"
 description = "Simple yet powerfull and friendly tool to administer remote servers using ssh"
 authors = ["Yuri Egorov <ysegorov@gmail.com>"]
+packages = [
+    { include = "yaggy", from = "src" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
