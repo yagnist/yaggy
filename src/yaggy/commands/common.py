@@ -22,13 +22,11 @@ def succeed(ctx, backref):
 
 def log_result(cmd, res, logger, raise_on_error=True):
     if res.returncode == 0:
-        logger.info('-' * 70)
         logger.info('$ %s', cmd)
         stdout = res.stdout.strip()
         if stdout:
             logger.info('%s', stdout)
     else:
-        logger.error('-' * 70)
         logger.error('$ %s', cmd)
         stderr = res.stderr.strip()
         if stderr:

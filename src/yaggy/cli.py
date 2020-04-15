@@ -161,6 +161,7 @@ def run(filename, **cli_kwargs):
                 logger.info('')
                 logger.info('***** %(args)s *****', parsed)
             else:
+                logger.info('-' * 70)
                 logger.info('# %(line)s', parsed)
 
             if dry_run and cmdname not in safe_commands:
