@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import shlex
-import shutil
 
 
 is_valid = True
@@ -51,30 +49,6 @@ def has_args(**parsed):
         return is_invalid, msg
 
     return is_valid, None
-
-
-def validate_vars(**parsed):
-    basedir = parsed['basedir']
-    args = parsed['args']
-
-    parts = shlex.split(args)
-
-    executable = shutil.which(parts[0])
-
-    if executable is None and len(parts) == 1:
-        executable = shutil.which(os.path.join(basedir, parts[0]))
-
-    if executable is None:
-        filename = os.path.join(basedir, shlex.quote(args))
-
-        if not os.path.isfile(filename):
-            cmdname = parsed['cmdname']
-            msg = f'{cmdname} "{filename}" file not found'
-            return is_invalid, msg
-
-        return is_valid, {'to_load': filename}
-
-    return is_valid, {'to_exec': [executable] + parts[1:]}
 
 
 def validate_include(**parsed):

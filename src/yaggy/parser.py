@@ -84,6 +84,8 @@ def parse(filename, tags=None, refs=None, vstate=None, rootdir=None):
             'tags': tuple(tags),
             'line': line,
             'basedir': basedir,
+            'linenum': linenum,
+            'relpath': relpath,
         }
 
         for validator in cmd['validators']:
