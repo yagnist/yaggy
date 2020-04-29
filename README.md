@@ -2,7 +2,8 @@
 
 **Work in progress. Not suitable for usage yet.**
 
-Simplified alternative to [ansible][ansible].
+Simplified alternative to [ansible][ansible] - proof of concept written in
+Python.
 
 
 ## Features
